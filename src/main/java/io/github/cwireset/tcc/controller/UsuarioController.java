@@ -1,10 +1,11 @@
 package io.github.cwireset.tcc.controller;
 
 import io.github.cwireset.tcc.domain.Usuario;
-import io.github.cwireset.tcc.exception.CpfExistenteException;
-import io.github.cwireset.tcc.exception.EmailExistenteException;
+import io.github.cwireset.tcc.exception.CpfJaExisteException;
+import io.github.cwireset.tcc.exception.EmailJaExisteException;
 import io.github.cwireset.tcc.exception.UsuarioCpfNaoExisteException;
 import io.github.cwireset.tcc.exception.UsuarioIdNaoExisteException;
+import io.github.cwireset.tcc.request.AtualizarUsuarioRequest;
 import io.github.cwireset.tcc.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ public class UsuarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Usuario cadastrar(@RequestBody @Valid Usuario usuario) throws EmailExistenteException, CpfExistenteException {
+    public Usuario cadastrar(@RequestBody @Valid Usuario usuario) throws EmailJaExisteException, CpfJaExisteException {
         return usuarioService.salvar(usuario);
 
     }
@@ -49,6 +50,11 @@ public class UsuarioController {
     @GetMapping("/cpf/{cpf}")
     public Usuario buscarPeloCpf(@PathVariable String cpf) throws UsuarioCpfNaoExisteException {
         return usuarioService.buscaPeloCpf(cpf);
+    }
+
+    @PutMapping("/{id}")
+    public Usuario atualizar(@PathVariable Long id, @RequestBody @Valid AtualizarUsuarioRequest atualizarUsuarioRequest) throws UsuarioIdNaoExisteException, EmailJaExisteException {
+        return usuarioService.atualizar(id, atualizarUsuarioRequest);
     }
 
 
