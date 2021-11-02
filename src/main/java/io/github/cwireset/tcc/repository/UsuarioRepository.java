@@ -12,10 +12,9 @@ import org.springframework.stereotype.Repository;
 public interface UsuarioRepository extends JpaRepository <Usuario, Long> {
 
     Usuario save(Usuario usuario);
-    Usuario findByEmailContaining(String email);
-    Usuario findByCpfContaining(String cpf);
     Page<Usuario> findAll(Pageable pageable);
     boolean existsById(Long id);
-
-
+    boolean existsByCpf(String cpf);
+    Usuario findByCpf(String cpf);
+    Usuario findByEmail(String email);
 }

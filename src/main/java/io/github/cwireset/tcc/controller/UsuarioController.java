@@ -3,7 +3,8 @@ package io.github.cwireset.tcc.controller;
 import io.github.cwireset.tcc.domain.Usuario;
 import io.github.cwireset.tcc.exception.CpfExistenteException;
 import io.github.cwireset.tcc.exception.EmailExistenteException;
-import io.github.cwireset.tcc.exception.UsuarioNaoExisteException;
+import io.github.cwireset.tcc.exception.UsuarioCpfNaoExisteException;
+import io.github.cwireset.tcc.exception.UsuarioIdNaoExisteException;
 import io.github.cwireset.tcc.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,9 +42,16 @@ public class UsuarioController {
     }
 
     @GetMapping("/{idUsuario}")
-    public Usuario buscarPeloId(@PathVariable Long idUsuario) throws UsuarioNaoExisteException {
+    public Usuario buscarPeloId(@PathVariable Long idUsuario) throws UsuarioIdNaoExisteException {
         return usuarioService.buscarPeloId(idUsuario);
     }
+
+    @GetMapping("/cpf/{cpf}")
+    public Usuario buscarPeloCpf(@PathVariable String cpf) throws UsuarioCpfNaoExisteException {
+        return usuarioService.buscaPeloCpf(cpf);
+    }
+
+
 
 
 }
