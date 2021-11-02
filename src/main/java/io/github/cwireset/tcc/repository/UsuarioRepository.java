@@ -15,6 +15,7 @@ public interface UsuarioRepository extends JpaRepository <Usuario, Long> {
     Usuario findByEmailContaining(String email);
     Usuario findByCpfContaining(String cpf);
     Page<Usuario> findAll(Pageable pageable);
+    boolean existsById(Long id);
 
 
 }

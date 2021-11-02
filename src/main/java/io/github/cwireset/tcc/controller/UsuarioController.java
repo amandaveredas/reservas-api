@@ -3,6 +3,7 @@ package io.github.cwireset.tcc.controller;
 import io.github.cwireset.tcc.domain.Usuario;
 import io.github.cwireset.tcc.exception.CpfExistenteException;
 import io.github.cwireset.tcc.exception.EmailExistenteException;
+import io.github.cwireset.tcc.exception.UsuarioNaoExisteException;
 import io.github.cwireset.tcc.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,6 +38,11 @@ public class UsuarioController {
             size = 10) Pageable pageable) {
 
         return usuarioService.buscarTodos(pageable);
+    }
+
+    @GetMapping("/{idUsuario}")
+    public Usuario buscarPeloId(@PathVariable Long idUsuario) throws UsuarioNaoExisteException {
+        return usuarioService.buscarPeloId(idUsuario);
     }
 
 
