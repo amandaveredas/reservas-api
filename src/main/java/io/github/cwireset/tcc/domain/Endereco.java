@@ -1,8 +1,6 @@
 package io.github.cwireset.tcc.domain;
 
 import lombok.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

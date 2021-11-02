@@ -5,11 +5,9 @@ import io.github.cwireset.tcc.exception.CpfExistenteException;
 import io.github.cwireset.tcc.exception.EmailExistenteException;
 import io.github.cwireset.tcc.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 public class UsuarioService {
@@ -28,4 +26,7 @@ public class UsuarioService {
 
     }
 
+    public Page<Usuario> buscarTodos(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
 }
