@@ -47,7 +47,7 @@ public class UsuarioService {
 
         Usuario usuario = buscarPeloId(id);
         Long idEndereco = usuario.getEndereco().getId();
-        
+
         Endereco endereco = new Endereco(idEndereco,
                 atualizarUsuarioRequest.getEndereco().getCep(),
                 atualizarUsuarioRequest.getEndereco().getLogradouro(),
