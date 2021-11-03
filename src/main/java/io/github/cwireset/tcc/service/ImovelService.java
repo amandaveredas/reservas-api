@@ -2,6 +2,7 @@ package io.github.cwireset.tcc.service;
 
 import io.github.cwireset.tcc.domain.Imovel;
 import io.github.cwireset.tcc.domain.Usuario;
+import io.github.cwireset.tcc.exception.ImovelIdNaoExisteException;
 import io.github.cwireset.tcc.exception.UsuarioIdNaoExisteException;
 import io.github.cwireset.tcc.repository.ImovelRepository;
 import io.github.cwireset.tcc.request.CadastrarImovelRequest;
@@ -44,5 +45,10 @@ public class ImovelService {
         } catch (UsuarioIdNaoExisteException e) {
             return null;
         }
+    }
+
+    public Imovel buscarPeloId(Long idImovel) throws ImovelIdNaoExisteException {
+        if(!repository.existsById(idImovel)) throw new ImovelIdNaoExisteException(idImovel);
+        return repository.findById(idImovel).get();
     }
 }

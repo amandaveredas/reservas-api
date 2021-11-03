@@ -1,7 +1,7 @@
 package io.github.cwireset.tcc.controller;
 
 import io.github.cwireset.tcc.domain.Imovel;
-import io.github.cwireset.tcc.domain.Usuario;
+import io.github.cwireset.tcc.exception.ImovelIdNaoExisteException;
 import io.github.cwireset.tcc.exception.UsuarioIdNaoExisteException;
 import io.github.cwireset.tcc.request.CadastrarImovelRequest;
 import io.github.cwireset.tcc.service.ImovelService;
@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/imoveis")
@@ -47,5 +46,10 @@ public class ImovelController {
             size = 10) Pageable pageable) throws UsuarioIdNaoExisteException {
 
         return  imovelService.buscarImoveisPorProprietario(pageable, idProprietario);
+    }
+
+    @GetMapping("/{idImovel}")
+    public Imovel buscarPeloId(@PathVariable Long idImovel) throws ImovelIdNaoExisteException {
+        return imovelService.buscarPeloId(idImovel);
     }
 }
