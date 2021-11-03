@@ -18,6 +18,6 @@ public interface ImovelRepository extends JpaRepository<Imovel, Long> {
     Optional<Imovel> findById(Long id);
     boolean existsById(Long id);
     void deleteById(Long id);
-    
+
 
 }

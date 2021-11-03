@@ -3,6 +3,7 @@ package io.github.cwireset.tcc.service;
 import io.github.cwireset.tcc.domain.Imovel;
 import io.github.cwireset.tcc.domain.Usuario;
 import io.github.cwireset.tcc.exception.ImovelIdNaoExisteException;
+import io.github.cwireset.tcc.exception.ImovelPossuiAnuncioException;
 import io.github.cwireset.tcc.exception.UsuarioIdNaoExisteException;
 import io.github.cwireset.tcc.repository.ImovelRepository;
 import io.github.cwireset.tcc.request.CadastrarImovelRequest;
@@ -18,6 +19,8 @@ public class ImovelService {
     ImovelRepository repository;
     @Autowired
     UsuarioService usuarioService;
+    @Autowired
+    AnuncioService anuncioService;
 
     public Imovel salvar(CadastrarImovelRequest cadastrarImovelRequest) throws UsuarioIdNaoExisteException {
 
@@ -52,9 +55,12 @@ public class ImovelService {
         return repository.findById(idImovel).get();
     }
 
-    public void excluir(Long idImovel) throws ImovelIdNaoExisteException {
-        verificaSeImovelExiste(idImovel);
-        //FIX: VERIFICAR SE O IMÓVEL ESTÁ EM ALGUM ANÚNCIO
+    public void excluir(Long idImovel) throws ImovelIdNaoExisteException, ImovelPossuiAnuncioException {
+        Imovel imovel = buscarPeloId(idImovel);
+
+        if (anuncioService.verificaSeExisteAnuncioPorImovel(imovel))
+        throw new ImovelPossuiAnuncioException();
+
         repository.deleteById(idImovel);
     }
 
