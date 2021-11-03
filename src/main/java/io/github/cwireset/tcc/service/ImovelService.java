@@ -6,6 +6,8 @@ import io.github.cwireset.tcc.exception.UsuarioIdNaoExisteException;
 import io.github.cwireset.tcc.repository.ImovelRepository;
 import io.github.cwireset.tcc.request.CadastrarImovelRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,5 +30,9 @@ public class ImovelService {
         imovel.setCaracteristicas(cadastrarImovelRequest.getCaracteristicas());
 
         return repository.save(imovel);
+    }
+
+    public Page<Imovel> buscarTodos(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 }
