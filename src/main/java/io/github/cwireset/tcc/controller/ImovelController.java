@@ -38,4 +38,14 @@ public class ImovelController {
 
         return imovelService.buscarTodos(pageable);
     }
+
+    @GetMapping("/proprietarios/{idProprietario}")
+    public Page<Imovel> listarImoveisPorProprietario (@PathVariable Long idProprietario, @PageableDefault(
+            sort = "identificacao",
+            direction = Sort.Direction.ASC,
+            page = 0,
+            size = 10) Pageable pageable) throws UsuarioIdNaoExisteException {
+
+        return  imovelService.buscarImoveisPorProprietario(pageable, idProprietario);
+    }
 }

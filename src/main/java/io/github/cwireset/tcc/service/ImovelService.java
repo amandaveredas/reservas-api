@@ -35,4 +35,14 @@ public class ImovelService {
     public Page<Imovel> buscarTodos(Pageable pageable) {
         return repository.findAll(pageable);
     }
+
+    public Page<Imovel> buscarImoveisPorProprietario(Pageable pageable, Long idProprietario) {
+        Usuario proprietario = null;
+        try {
+            proprietario = usuarioService.buscarPeloId(idProprietario);
+            return repository.findAllByProprietario(pageable, proprietario);
+        } catch (UsuarioIdNaoExisteException e) {
+            return null;
+        }
+    }
 }
