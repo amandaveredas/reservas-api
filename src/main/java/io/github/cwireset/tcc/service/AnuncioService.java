@@ -9,6 +9,8 @@ import io.github.cwireset.tcc.exception.UsuarioIdNaoExisteException;
 import io.github.cwireset.tcc.repository.AnuncioRepository;
 import io.github.cwireset.tcc.request.CadastrarAnuncioRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,5 +45,9 @@ public class AnuncioService {
 
     public boolean verificaSeExisteAnuncioPorImovel(Imovel imovel){
         return (repository.existsByImovel(imovel));
+    }
+
+    public Page<Anuncio> listarTodos(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 }
