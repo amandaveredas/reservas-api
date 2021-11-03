@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 
 
 @Repository
@@ -15,6 +16,8 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
 
     Anuncio save(Anuncio anuncio);
     boolean existsByImovel(Imovel imovel);
-    Page<Anuncio> findAll(Pageable pageable);
-    Page<Anuncio> findAllByAnunciante(Usuario anunciante, Pageable pageable);
+    Page<Anuncio> findAllByAtivoIsTrue(Pageable pageable);
+    Page<Anuncio> findAllByAtivoIsTrueAndAndAnuncianteEquals(Usuario anunciante, Pageable pageable);
+    Optional<Anuncio> findById(Long id);
+    boolean existsById(Long id);
 }

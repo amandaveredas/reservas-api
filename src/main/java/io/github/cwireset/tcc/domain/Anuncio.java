@@ -38,4 +38,6 @@ public class Anuncio {
 
     private String descricao;
 
+    private boolean ativo;
+
 }

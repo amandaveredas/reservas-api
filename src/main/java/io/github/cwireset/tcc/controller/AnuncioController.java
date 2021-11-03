@@ -1,6 +1,7 @@
 package io.github.cwireset.tcc.controller;
 
 import io.github.cwireset.tcc.domain.Anuncio;
+import io.github.cwireset.tcc.exception.AnuncioNaoExisteException;
 import io.github.cwireset.tcc.exception.ImovelIdNaoExisteException;
 import io.github.cwireset.tcc.exception.ImovelAmbiguidadeAnunciosException;
 import io.github.cwireset.tcc.exception.UsuarioIdNaoExisteException;
@@ -15,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/anuncios")
@@ -48,6 +48,11 @@ public class AnuncioController {
             size = 10) Pageable pageable) {
 
         return anuncioService.buscarAnunciosPorAnunciante(idAnunciante, pageable);
+    }
+
+    @DeleteMapping("/{idAnuncio}")
+    public void excluirAnuncioPeloId(@PathVariable Long idAnuncio) throws AnuncioNaoExisteException {
+        anuncioService.excluirLogicamente(idAnuncio);
     }
 
 

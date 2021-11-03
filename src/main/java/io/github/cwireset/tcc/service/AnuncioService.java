@@ -3,6 +3,7 @@ package io.github.cwireset.tcc.service;
 import io.github.cwireset.tcc.domain.Anuncio;
 import io.github.cwireset.tcc.domain.Imovel;
 import io.github.cwireset.tcc.domain.Usuario;
+import io.github.cwireset.tcc.exception.AnuncioNaoExisteException;
 import io.github.cwireset.tcc.exception.ImovelIdNaoExisteException;
 import io.github.cwireset.tcc.exception.ImovelAmbiguidadeAnunciosException;
 import io.github.cwireset.tcc.exception.UsuarioIdNaoExisteException;
@@ -39,6 +40,7 @@ public class AnuncioService {
         anuncio.setValorDiaria(cadastrarAnuncioRequest.getValorDiaria());
         anuncio.setFormasAceitas(cadastrarAnuncioRequest.getFormasAceitas());
         anuncio.setDescricao(cadastrarAnuncioRequest.getDescricao());
+        anuncio.setAtivo(true);
 
         return repository.save(anuncio);
     }
@@ -48,15 +50,26 @@ public class AnuncioService {
     }
 
     public Page<Anuncio> listarTodos(Pageable pageable) {
-        return repository.findAll(pageable);
+        return repository.findAllByAtivoIsTrue(pageable);
     }
 
     public Page<Anuncio> buscarAnunciosPorAnunciante(Long idAnunciante, Pageable pageable) {
         try {
             Usuario anunciante =  usuarioService.buscarPeloId(idAnunciante);
-            return repository.findAllByAnunciante(anunciante,pageable);
+            return repository.findAllByAtivoIsTrueAndAndAnuncianteEquals(anunciante,pageable);
         } catch (UsuarioIdNaoExisteException e) {
            return null;
         }
+    }
+
+    public void excluirLogicamente(Long idAnuncio) throws AnuncioNaoExisteException {
+        if(!repository.existsById(idAnuncio)) throw new AnuncioNaoExisteException(idAnuncio);
+        Anuncio anuncio = repository.findById(idAnuncio).get();
+        if (anuncio.isAtivo() == false) throw new AnuncioNaoExisteException(idAnuncio);
+
+        anuncio.setAtivo(false);
+        repository.save(anuncio);
+
+
     }
 }
