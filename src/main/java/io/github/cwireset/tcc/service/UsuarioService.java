@@ -1,5 +1,6 @@
 package io.github.cwireset.tcc.service;
 
+import io.github.cwireset.tcc.domain.Endereco;
 import io.github.cwireset.tcc.domain.Usuario;
 import io.github.cwireset.tcc.exception.CpfJaExisteException;
 import io.github.cwireset.tcc.exception.EmailJaExisteException;
@@ -45,10 +46,20 @@ public class UsuarioService {
         verificaAmbiguidaeEmail(atualizarUsuarioRequest.getEmail());
 
         Usuario usuario = buscarPeloId(id);
+        Long idEndereco = usuario.getEndereco().getId();
+        
+        Endereco endereco = new Endereco(idEndereco,
+                atualizarUsuarioRequest.getEndereco().getCep(),
+                atualizarUsuarioRequest.getEndereco().getLogradouro(),
+                atualizarUsuarioRequest.getEndereco().getNumero(),
+                atualizarUsuarioRequest.getEndereco().getComplemento(),
+                atualizarUsuarioRequest.getEndereco().getBairro(),
+                atualizarUsuarioRequest.getEndereco().getCidade(),
+                atualizarUsuarioRequest.getEndereco().getEstado());
 
         usuario.setNome(atualizarUsuarioRequest.getNome());
         usuario.setEmail(atualizarUsuarioRequest.getEmail());
-        usuario.setEndereco(atualizarUsuarioRequest.getEndereco());
+        usuario.setEndereco(endereco);
         usuario.setSenha(atualizarUsuarioRequest.getSenha());
         usuario.setDataNascimento(atualizarUsuarioRequest.getDataNascimento());
 
