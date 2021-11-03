@@ -40,4 +40,16 @@ public class AnuncioController {
         return anuncioService.listarTodos(pageable);
     }
 
+    @GetMapping("/anunciantes/{idAnunciante}")
+    public Page<Anuncio> listarAnunciosPorAnunciante(@PathVariable Long idAnunciante, @PageableDefault(
+            sort = "valorDiaria",
+            direction = Sort.Direction.ASC,
+            page = 0,
+            size = 10) Pageable pageable) {
+
+        return anuncioService.buscarAnunciosPorAnunciante(idAnunciante, pageable);
+    }
+
+
+
 }

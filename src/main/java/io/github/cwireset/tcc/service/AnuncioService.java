@@ -50,4 +50,13 @@ public class AnuncioService {
     public Page<Anuncio> listarTodos(Pageable pageable) {
         return repository.findAll(pageable);
     }
+
+    public Page<Anuncio> buscarAnunciosPorAnunciante(Long idAnunciante, Pageable pageable) {
+        try {
+            Usuario anunciante =  usuarioService.buscarPeloId(idAnunciante);
+            return repository.findAllByAnunciante(anunciante,pageable);
+        } catch (UsuarioIdNaoExisteException e) {
+           return null;
+        }
+    }
 }
