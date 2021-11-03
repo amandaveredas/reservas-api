@@ -17,4 +17,7 @@ public interface ImovelRepository extends JpaRepository<Imovel, Long> {
     Page<Imovel> findAllByProprietario(Pageable pageable, Usuario proprietario);
     Optional<Imovel> findById(Long id);
     boolean existsById(Long id);
+    void deleteById(Long id);
+    
+
 }

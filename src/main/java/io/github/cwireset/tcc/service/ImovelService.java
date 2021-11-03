@@ -48,7 +48,17 @@ public class ImovelService {
     }
 
     public Imovel buscarPeloId(Long idImovel) throws ImovelIdNaoExisteException {
-        if(!repository.existsById(idImovel)) throw new ImovelIdNaoExisteException(idImovel);
+        verificaSeImovelExiste(idImovel);
         return repository.findById(idImovel).get();
+    }
+
+    public void excluir(Long idImovel) throws ImovelIdNaoExisteException {
+        verificaSeImovelExiste(idImovel);
+        //FIX: VERIFICAR SE O IMÓVEL ESTÁ EM ALGUM ANÚNCIO
+        repository.deleteById(idImovel);
+    }
+
+    private void verificaSeImovelExiste(Long idImovel) throws ImovelIdNaoExisteException {
+        if(!repository.existsById(idImovel)) throw new ImovelIdNaoExisteException(idImovel);
     }
 }

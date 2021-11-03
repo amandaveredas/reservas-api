@@ -52,4 +52,9 @@ public class ImovelController {
     public Imovel buscarPeloId(@PathVariable Long idImovel) throws ImovelIdNaoExisteException {
         return imovelService.buscarPeloId(idImovel);
     }
+
+    @DeleteMapping("/{idImovel}")
+    public void excluirImovelPeloId(@PathVariable Long idImovel) throws ImovelIdNaoExisteException {
+        imovelService.excluir(idImovel);
+    }
 }
