@@ -35,6 +35,7 @@ public class ReservaService {
         Anuncio anuncio = anuncioService.buscarPeloId(cadastrarReservaRequest.getIdAnuncio());
         TipoImovel tipoImovel = anuncio.getImovel().getTipoImovel();
         Integer quantidadePessoas = cadastrarReservaRequest.getQuantidadePessoas();
+        Usuario solicitante = usuarioService.buscarPeloId(cadastrarReservaRequest.getIdSolicitante());
 
 
         if (dataHoraInicialRequest.isAfter(dataHoraFinalRequest))
@@ -58,7 +59,7 @@ public class ReservaService {
                     throw new PeriodoInvalidoException("Este anuncio já esta reservado para o período informado.");
                 }
             }
-            
+
         }
 
         if (tipoImovel.equals(TipoImovel.HOTEL) && quantidadePessoas <2)
@@ -70,20 +71,6 @@ public class ReservaService {
 
         Reserva reserva = new Reserva();
 
-        //Dados do solicitante - response
-        Usuario solicitante = usuarioService.buscarPeloId(cadastrarReservaRequest.getIdSolicitante());
-        DadosSolicitanteResponse dadosSolicitanteResponse = new DadosSolicitanteResponse();
-        dadosSolicitanteResponse.setId(cadastrarReservaRequest.getIdSolicitante());
-        dadosSolicitanteResponse.setNome(solicitante.getNome());
-
-        //Dados do anuncio - response
-        DadosAnuncioResponse dadosAnuncioResponse = new DadosAnuncioResponse();
-        dadosAnuncioResponse.setId(cadastrarReservaRequest.getIdAnuncio());
-        dadosAnuncioResponse.setImovel(anuncio.getImovel());
-        dadosAnuncioResponse.setAnunciante(anuncio.getAnunciante());
-        dadosAnuncioResponse.setFormasAceitas(anuncio.getFormasAceitas());
-        dadosAnuncioResponse.setDescricao(anuncio.getDescricao());
-
         //Período da reserva
         final int horaInicioReserva = 14;
         final int horaFimReserva = 12;
@@ -92,24 +79,42 @@ public class ReservaService {
         Periodo periodoAjustado = new Periodo();
         periodoAjustado.setDataHoraInicial(dataInicioReservaAjustada);
         periodoAjustado.setDataHoraFinal(dataFimoReservaAjustada);
-        reserva.setPeriodo(periodoAjustado);
 
         //Pagamento da reserva
         Pagamento pagamento = new Pagamento();
         BigDecimal valorTotal = valorTotalReserva(dataInicialRequest, dataIFinalRequest, anuncio.getValorDiaria());
         pagamento.setValorTotal(valorTotal);
+
+        //setando e salvando dados da reserva
+        reserva.setSolicitante(solicitante);
+        reserva.setAnuncio(anuncio);
+        reserva.setPeriodo(periodoAjustado);
+        reserva.setQuantidadePessoas(quantidadePessoas);
+        reserva.setDataHoraReserva(LocalDateTime.now());
         reserva.setPagamento(pagamento);
+        repository.save(reserva);
+
+        //Dados do solicitante - response
+        DadosSolicitanteResponse dadosSolicitanteResponse = new DadosSolicitanteResponse();
+        dadosSolicitanteResponse.setId(reserva.getSolicitante().getId());
+        dadosSolicitanteResponse.setNome(reserva.getSolicitante().getNome());
+
+        //Dados do anuncio - response
+        DadosAnuncioResponse dadosAnuncioResponse = new DadosAnuncioResponse();
+        dadosAnuncioResponse.setId(reserva.getAnuncio().getId());
+        dadosAnuncioResponse.setImovel(reserva.getAnuncio().getImovel());
+        dadosAnuncioResponse.setAnunciante(reserva.getAnuncio().getAnunciante());
+        dadosAnuncioResponse.setFormasAceitas(reserva.getAnuncio().getFormasAceitas());
+        dadosAnuncioResponse.setDescricao(reserva.getAnuncio().getDescricao());
 
         //Informações da reserva - response
         InformacaoReservaResponse informacaoReservaResponse = new InformacaoReservaResponse();
         informacaoReservaResponse.setIdReserva(reserva.getId());
         informacaoReservaResponse.setSolicitante(dadosSolicitanteResponse);
-        informacaoReservaResponse.setQuantidadePessoas(quantidadePessoas);
+        informacaoReservaResponse.setQuantidadePessoas(reserva.getQuantidadePessoas());
         informacaoReservaResponse.setAnuncio(dadosAnuncioResponse);
         informacaoReservaResponse.setPeriodo(reserva.getPeriodo());
         informacaoReservaResponse.setPagamento(reserva.getPagamento());
-
-        reserva.setDataHoraReserva(LocalDateTime.now());
 
         return informacaoReservaResponse;
 

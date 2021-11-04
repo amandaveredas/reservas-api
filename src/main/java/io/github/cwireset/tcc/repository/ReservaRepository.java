@@ -12,5 +12,6 @@ import java.util.List;
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     List<Reserva> findAllByPeriodo_DataHoraInicialIsAfterOrPeriodo_DataHoraFinalIsBefore(LocalDateTime dataHoraInicio, LocalDateTime dataHoraFinal);
+    Reserva save(Reserva reserva);
 
 }
