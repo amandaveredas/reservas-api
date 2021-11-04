@@ -147,6 +147,15 @@ public class ReservaService {
         }
     }
 
+    public Page<Reserva> buscarReservasPorAnunciante(Long idAnunciante, Pageable pageable) {
+        try {
+            Usuario anunciante = usuarioService.buscarPeloId(idAnunciante);
+            return repository.findReservasByAnuncio_Anunciante(anunciante,pageable);
+        } catch (UsuarioIdNaoExisteException e) {
+            return null;
+        }
+    }
+
     private LocalDateTime ajustarHoraReserva(LocalDateTime dataOriginalReserva, int hora) {
 
         int diaOriginalReserva = dataOriginalReserva.getDayOfMonth();
@@ -169,6 +178,7 @@ public class ReservaService {
         long quantDiarias = ChronoUnit.DAYS.between(inicio, fim);
         return BigDecimal.valueOf(valorDiaria.doubleValue() * quantDiarias).setScale(2);
     }
+
 
 
 }

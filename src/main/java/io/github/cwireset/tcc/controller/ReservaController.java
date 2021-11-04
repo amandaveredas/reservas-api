@@ -47,6 +47,17 @@ public class ReservaController {
         return reservaService.buscarReservasPorSolicitante(idSolicitante, dataHoraInicial,dataHoraFinal, pageable);
     }
 
+    @GetMapping("/anuncios/anunciantes/{idAnunciante}")
+    public Page<Reserva> listarPorAnunciante( @PathVariable Long idAnunciante,
+                                               @PageableDefault(sort = "periodo_dataHoraFinal",
+                                                       direction = Sort.Direction.DESC,
+                                                       page = 0,
+                                                       size = 10) Pageable pageable ){
+
+
+        return reservaService.buscarReservasPorAnunciante(idAnunciante, pageable);
+    }
+
 
 
 
