@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
@@ -23,4 +24,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     Page<Reserva> findReservasBySolicitanteAndPeriodo_DataHoraFinalIsBefore(Usuario solicitante, LocalDateTime fim, Pageable pageable);
     Page<Reserva> findReservasBySolicitanteAndPeriodo_DataHoraInicialIsAfterAndPeriodo_DataHoraFinalIsBefore(Usuario solicitante, LocalDateTime inicio, LocalDateTime fim, Pageable pageable);
     Page<Reserva> findReservasByAnuncio_Anunciante(Usuario anunciante, Pageable pageable);
+    boolean existsById(Long idReserva);
+    Optional<Reserva> findById(Long idReserva);
 }

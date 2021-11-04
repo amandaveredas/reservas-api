@@ -1,6 +1,7 @@
 package io.github.cwireset.tcc.controller;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.github.cwireset.tcc.domain.FormaPagamento;
 import io.github.cwireset.tcc.domain.Imovel;
 import io.github.cwireset.tcc.domain.Periodo;
 import io.github.cwireset.tcc.domain.Reserva;
@@ -18,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 
@@ -56,6 +59,12 @@ public class ReservaController {
 
 
         return reservaService.buscarReservasPorAnunciante(idAnunciante, pageable);
+    }
+
+    @PutMapping("/{idReserva}/pagamentos")
+    public void pagarReserva(@PathVariable Long idReserva, @RequestBody String formaPagamentoRequest) throws FormaPagaMentoInvalidaException, ReservaNaoPendenteException, ReservaNaoExisteException {
+        Enum<FormaPagamento> formaPagamento = FormaPagamento.valueOf(formaPagamentoRequest.substring(1,formaPagamentoRequest.length()-1));
+        reservaService.pagar(idReserva, formaPagamento);
     }
 
 

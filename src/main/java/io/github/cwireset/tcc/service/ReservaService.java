@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.AssertTrue;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -154,6 +155,31 @@ public class ReservaService {
         } catch (UsuarioIdNaoExisteException e) {
             return null;
         }
+    }
+
+    public void pagar(Long idReserva, Enum<FormaPagamento> formaPagamento) throws ReservaNaoExisteException, FormaPagaMentoInvalidaException, ReservaNaoPendenteException {
+        if(!repository.existsById(idReserva)) throw new ReservaNaoExisteException(idReserva);
+
+        Reserva reserva = repository.findById(idReserva).get();
+        List<FormaPagamento> formasAceitas = reserva.getAnuncio().getFormasAceitas();
+
+        if (!formasAceitas.contains(formaPagamento)){
+            String aceitas = "";
+            for(FormaPagamento f: formasAceitas){
+                aceitas+= f+", ";
+            }
+            aceitas = aceitas.substring(0,aceitas.length()-2);
+            throw new FormaPagaMentoInvalidaException(formaPagamento,aceitas);
+        }
+
+        StatusPagamento status = reserva.getPagamento().getStatus();
+        if(!status.equals(StatusPagamento.PENDENTE)){
+            throw new ReservaNaoPendenteException();
+        }
+
+        reserva.getPagamento().setStatus(StatusPagamento.PAGO);
+        repository.save(reserva);
+
     }
 
     private LocalDateTime ajustarHoraReserva(LocalDateTime dataOriginalReserva, int hora) {

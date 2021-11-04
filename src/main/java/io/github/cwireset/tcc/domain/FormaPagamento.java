@@ -7,4 +7,8 @@ public enum FormaPagamento {
     PIX,
     DINHEIRO;
 
+
+
+
+
 }
