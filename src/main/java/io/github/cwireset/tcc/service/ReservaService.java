@@ -52,22 +52,25 @@ public class ReservaService {
 
         List<Reserva> reservasCoincidentes = repository.findAllByPeriodo_DataHoraInicialIsAfterOrPeriodo_DataHoraFinalIsBefore(dataHoraInicialRequest, dataHoraFinalRequest);
         for (Reserva r: reservasCoincidentes){
-            if(r.getPeriodo().getDataHoraInicial().isBefore(dataHoraFinalRequest) &&
-                r.getPeriodo().getDataHoraFinal().isAfter(dataHoraInicialRequest)){
-                if (r.getPagamento().getStatus() == StatusPagamento.CANCELADO ||
-                        r.getPagamento().getStatus() == StatusPagamento.ESTORNADO){
-                    throw new PeriodoInvalidoException("Este anuncio já esta reservado para o período informado.");
+            if (r.getAnuncio().getId() == cadastrarReservaRequest.getIdAnuncio()){
+                if(r.getPeriodo().getDataHoraInicial().isBefore(dataHoraFinalRequest) &&
+                        r.getPeriodo().getDataHoraFinal().isAfter(dataHoraInicialRequest)){
+                    if (r.getPagamento().getStatus() == StatusPagamento.PENDENTE ||
+                            r.getPagamento().getStatus() == StatusPagamento.PAGO){
+                        throw new PeriodoInvalidoException("Este anuncio já esta reservado para o período informado.");
+                    }
                 }
             }
+
 
         }
 
         if (tipoImovel.equals(TipoImovel.HOTEL) && quantidadePessoas <2)
-            throw new NumeroMinimoPessoasException(quantidadePessoas, TipoImovel.HOTEL.getDescricao());
+            throw new NumeroMinimoPessoasException(2, TipoImovel.HOTEL.getDescricao());
 
         long quantDiarias = ChronoUnit.DAYS.between(dataInicialRequest, dataIFinalRequest);
         if (tipoImovel.equals(TipoImovel.POUSADA) && quantDiarias<5)
-            throw new NumeroMinimoDiariasException(quantDiarias, TipoImovel.POUSADA.getDescricao());
+            throw new NumeroMinimoDiariasException(5, TipoImovel.POUSADA.getDescricao());
 
         Reserva reserva = new Reserva();
 
@@ -84,6 +87,7 @@ public class ReservaService {
         Pagamento pagamento = new Pagamento();
         BigDecimal valorTotal = valorTotalReserva(dataInicialRequest, dataIFinalRequest, anuncio.getValorDiaria());
         pagamento.setValorTotal(valorTotal);
+        pagamento.setStatus(StatusPagamento.PENDENTE);
 
         //setando e salvando dados da reserva
         reserva.setSolicitante(solicitante);
