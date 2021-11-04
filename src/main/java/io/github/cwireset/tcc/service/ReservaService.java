@@ -192,6 +192,17 @@ public class ReservaService {
         repository.save(reserva);
     }
 
+    public void estornar(Long idReserva) throws ReservaNaoExisteException, ReservaNaoPagaException {
+        Reserva reserva = verificaSeExisteERetornaAReserva(idReserva);
+        if(!verificaSeReservaPaga(reserva)){
+            throw new ReservaNaoPagaException();
+        };
+        reserva.getPagamento().setStatus(StatusPagamento.ESTORNADO);
+        repository.save(reserva);
+    }
+
+
+
     private LocalDateTime ajustarHoraReserva(LocalDateTime dataOriginalReserva, int hora) {
 
         int diaOriginalReserva = dataOriginalReserva.getDayOfMonth();
@@ -227,5 +238,14 @@ public class ReservaService {
         }
         return true;
     }
+
+    private boolean verificaSeReservaPaga(Reserva reserva) {
+        StatusPagamento status = reserva.getPagamento().getStatus();
+        if(!status.equals(StatusPagamento.PAGO)){
+            return false;
+        }
+        return true;
+    }
+
 
 }

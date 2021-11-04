@@ -72,6 +72,11 @@ public class ReservaController {
         reservaService.cancelar(idReserva);
     }
 
+    @PutMapping("/{idReserva}/pagamentos/estornar")
+    public void estornarReserva(@PathVariable Long idReserva) throws ReservaNaoExisteException, ReservaNaoPagaException {
+        reservaService.estornar(idReserva);
+    }
+
 
 
 
