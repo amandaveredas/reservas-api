@@ -72,4 +72,11 @@ public class AnuncioService {
 
 
     }
+
+    public Anuncio buscarPeloId(Long idAnuncio) throws AnuncioNaoExisteException {
+        if(!repository.existsById(idAnuncio)) throw new AnuncioNaoExisteException(idAnuncio);
+        return repository.findById(idAnuncio).get();
+    }
+
+
 }
