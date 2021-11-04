@@ -158,9 +158,7 @@ public class ReservaService {
     }
 
     public void pagar(Long idReserva, Enum<FormaPagamento> formaPagamento) throws ReservaNaoExisteException, FormaPagaMentoInvalidaException, ReservaNaoPendenteException {
-        if(!repository.existsById(idReserva)) throw new ReservaNaoExisteException(idReserva);
-
-        Reserva reserva = repository.findById(idReserva).get();
+        Reserva reserva = verificaSeExisteERetornaAReserva(idReserva);
         List<FormaPagamento> formasAceitas = reserva.getAnuncio().getFormasAceitas();
 
         if (!formasAceitas.contains(formaPagamento)){
@@ -172,14 +170,26 @@ public class ReservaService {
             throw new FormaPagaMentoInvalidaException(formaPagamento,aceitas);
         }
 
-        StatusPagamento status = reserva.getPagamento().getStatus();
-        if(!status.equals(StatusPagamento.PENDENTE)){
-            throw new ReservaNaoPendenteException();
-        }
+        if(!verificaSeReservaPendente(reserva)){
+            throw new ReservaNaoPendenteException( "Não é possível realizar o pagamento para esta reserva, pois ela não está no status PENDENTE.");
+        };
 
         reserva.getPagamento().setStatus(StatusPagamento.PAGO);
         repository.save(reserva);
 
+    }
+
+
+
+    public void cancelar(Long idReserva) throws ReservaNaoExisteException, ReservaNaoPendenteException {
+        Reserva reserva = verificaSeExisteERetornaAReserva(idReserva);
+
+        if(!verificaSeReservaPendente(reserva)){
+            throw new ReservaNaoPendenteException("Não é possível realizar o cancelamento para esta reserva, pois ela não está no status PENDENTE.");
+        };
+
+        reserva.getPagamento().setStatus(StatusPagamento.CANCELADO);
+        repository.save(reserva);
     }
 
     private LocalDateTime ajustarHoraReserva(LocalDateTime dataOriginalReserva, int hora) {
@@ -198,13 +208,24 @@ public class ReservaService {
         return  dataAjustadaReserva;
     }
 
-
-
     private BigDecimal valorTotalReserva (LocalDate inicio, LocalDate fim, BigDecimal valorDiaria){
         long quantDiarias = ChronoUnit.DAYS.between(inicio, fim);
         return BigDecimal.valueOf(valorDiaria.doubleValue() * quantDiarias).setScale(2);
     }
 
+    private Reserva verificaSeExisteERetornaAReserva(Long idReserva) throws ReservaNaoExisteException {
+        if(!repository.existsById(idReserva)) throw new ReservaNaoExisteException(idReserva);
 
+        Reserva reserva = repository.findById(idReserva).get();
+        return reserva;
+    }
+
+    private boolean verificaSeReservaPendente(Reserva reserva) throws ReservaNaoPendenteException {
+        StatusPagamento status = reserva.getPagamento().getStatus();
+        if(!status.equals(StatusPagamento.PENDENTE)){
+            return false;
+        }
+        return true;
+    }
 
 }

@@ -67,6 +67,11 @@ public class ReservaController {
         reservaService.pagar(idReserva, formaPagamento);
     }
 
+    @PutMapping("/{idReserva}/pagamentos/cancelar")
+    public void cancelarReserva(@PathVariable Long idReserva) throws ReservaNaoPendenteException, ReservaNaoExisteException {
+        reservaService.cancelar(idReserva);
+    }
+
 
 
 
