@@ -8,6 +8,8 @@ import io.github.cwireset.tcc.response.DadosAnuncioResponse;
 import io.github.cwireset.tcc.response.DadosSolicitanteResponse;
 import io.github.cwireset.tcc.response.InformacaoReservaResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -124,6 +126,27 @@ public class ReservaService {
 
     }
 
+    public Page<Reserva> buscarReservasPorSolicitante(Long idSolicitante,
+                                                      LocalDateTime inicioPeriodo,
+                                                      LocalDateTime fimPeriodo,
+                                                      Pageable pageable) {
+
+        try {
+            Usuario solicitante = usuarioService.buscarPeloId(idSolicitante);
+            if(inicioPeriodo == null && fimPeriodo == null){
+                return repository.findAllBySolicitante(solicitante, pageable);
+            }else if (inicioPeriodo == null){
+                return repository.findReservasBySolicitanteAndPeriodo_DataHoraFinalIsBefore(solicitante, fimPeriodo,pageable);
+            }else if (fimPeriodo == null){
+                return repository.findReservasBySolicitanteAndPeriodo_DataHoraInicialIsAfter(solicitante, inicioPeriodo, pageable);
+            }else{
+                return repository.findReservasBySolicitanteAndPeriodo_DataHoraInicialIsAfterAndPeriodo_DataHoraFinalIsBefore(solicitante,inicioPeriodo,fimPeriodo,pageable);
+            }
+        } catch (UsuarioIdNaoExisteException e) {
+            return null;
+        }
+    }
+
     private LocalDateTime ajustarHoraReserva(LocalDateTime dataOriginalReserva, int hora) {
 
         int diaOriginalReserva = dataOriginalReserva.getDayOfMonth();
@@ -146,4 +169,6 @@ public class ReservaService {
         long quantDiarias = ChronoUnit.DAYS.between(inicio, fim);
         return BigDecimal.valueOf(valorDiaria.doubleValue() * quantDiarias).setScale(2);
     }
+
+
 }
