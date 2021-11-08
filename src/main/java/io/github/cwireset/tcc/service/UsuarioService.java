@@ -20,8 +20,8 @@ public class UsuarioService {
     UsuarioRepository repository;
 
     public Usuario salvar(Usuario usuario) throws EmailJaExisteException, CpfJaExisteException {
-        verificaAmbiguidaeEmail(usuario.getEmail(), usuario.getId());
-        verificaAmbiguidadeCpf(usuario);
+        verificaAmbiguidaeEmailELancaException(usuario.getEmail(), usuario.getId());
+        verificaAmbiguidadeCpfElancaException(usuario);
         return repository.save(usuario);
 
     }
@@ -31,19 +31,19 @@ public class UsuarioService {
     }
 
     public Usuario buscarPeloId(Long idUsuario) throws UsuarioIdNaoExisteException {
-        verificaSeExistePeloId(idUsuario);
+        verificaSeExistePeloIdELancaException(idUsuario);
         return repository.findById(idUsuario).get();
     }
 
     public Usuario buscaPeloCpf(String cpf) throws UsuarioCpfNaoExisteException {
-        verificaSeExistePeloCpf(cpf);
+        verificaSeExistePeloCpfELancaException(cpf);
         return repository.findByCpf(cpf);
     }
 
     public Usuario atualizar(Long id, AtualizarUsuarioRequest atualizarUsuarioRequest) throws UsuarioIdNaoExisteException, EmailJaExisteException {
-        verificaSeExistePeloId(id);
+        verificaSeExistePeloIdELancaException(id);
 
-        verificaAmbiguidaeEmail(atualizarUsuarioRequest.getEmail(), id);
+        verificaAmbiguidaeEmailELancaException(atualizarUsuarioRequest.getEmail(), id);
 
         Usuario usuario = buscarPeloId(id);
 
@@ -91,25 +91,25 @@ public class UsuarioService {
         return usuario;
     }
 
-    private void verificaSeExistePeloId(Long idUsuario) throws UsuarioIdNaoExisteException {
+    private void verificaSeExistePeloIdELancaException(Long idUsuario) throws UsuarioIdNaoExisteException {
         if(!repository.existsById(idUsuario)){
             throw new UsuarioIdNaoExisteException(idUsuario);
         }
     }
 
-    private void verificaSeExistePeloCpf(String cpf) throws UsuarioCpfNaoExisteException {
+    private void verificaSeExistePeloCpfELancaException(String cpf) throws UsuarioCpfNaoExisteException {
         if(!repository.existsByCpf(cpf)){
             throw new UsuarioCpfNaoExisteException(cpf);
         }
     }
 
-    private void verificaAmbiguidadeCpf(Usuario usuario) throws CpfJaExisteException {
+    private void verificaAmbiguidadeCpfElancaException(Usuario usuario) throws CpfJaExisteException {
         if (repository.existsByCpf(usuario.getCpf())){
             throw new CpfJaExisteException(usuario.getCpf());
         }
     }
 
-    private void verificaAmbiguidaeEmail(String email, Long id) throws EmailJaExisteException {
+    private void verificaAmbiguidaeEmailELancaException(String email, Long id) throws EmailJaExisteException {
         if (repository.existsByEmail(email)) {
             if (!repository.findById(id).get().getEmail().equals(email))
             throw new EmailJaExisteException(email);
