@@ -17,6 +17,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 
 import javax.persistence.EnumType;
@@ -44,7 +45,7 @@ public class ReservaController {
                                                @PageableDefault(sort = "periodo_dataHoraFinal",
             direction = Sort.Direction.DESC,
             page = 0,
-            size = 10) Pageable pageable ){
+            size = 10) @ApiIgnore Pageable pageable ){
 
 
         return reservaService.buscarReservasPorSolicitante(idSolicitante, dataHoraInicial,dataHoraFinal, pageable);
@@ -55,7 +56,7 @@ public class ReservaController {
                                                @PageableDefault(sort = "periodo_dataHoraFinal",
                                                        direction = Sort.Direction.DESC,
                                                        page = 0,
-                                                       size = 10) Pageable pageable ){
+                                                       size = 10) @ApiIgnore Pageable pageable ){
 
 
         return reservaService.buscarReservasPorAnunciante(idAnunciante, pageable);

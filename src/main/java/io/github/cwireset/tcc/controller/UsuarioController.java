@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 
@@ -35,9 +36,7 @@ public class UsuarioController {
     @GetMapping
     public Page<Usuario> listarTodos(@PageableDefault(
             sort = "nome",
-            direction = Sort.Direction.ASC,
-            page = 0,
-            size = 10) Pageable pageable) {
+            direction = Sort.Direction.ASC) @ApiIgnore Pageable pageable) {
 
         return usuarioService.buscarTodos(pageable);
     }

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 
@@ -35,7 +36,7 @@ public class AnuncioController {
             sort = "valorDiaria",
             direction = Sort.Direction.ASC,
             page = 0,
-            size = 10) Pageable pageable) {
+            size = 10) @ApiIgnore Pageable pageable) {
 
         return anuncioService.listarTodos(pageable);
     }
@@ -45,7 +46,7 @@ public class AnuncioController {
             sort = "valorDiaria",
             direction = Sort.Direction.ASC,
             page = 0,
-            size = 10) Pageable pageable) {
+            size = 10) @ApiIgnore Pageable pageable) {
 
         return anuncioService.buscarAnunciosPorAnunciante(idAnunciante, pageable);
     }

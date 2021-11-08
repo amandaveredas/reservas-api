@@ -20,7 +20,7 @@ public class UsuarioService {
     UsuarioRepository repository;
 
     public Usuario salvar(Usuario usuario) throws EmailJaExisteException, CpfJaExisteException {
-        verificaAmbiguidaeEmail(usuario.getEmail());
+        verificaAmbiguidaeEmail(usuario.getEmail(), usuario.getId());
         verificaAmbiguidadeCpf(usuario);
         return repository.save(usuario);
 
@@ -43,23 +43,46 @@ public class UsuarioService {
     public Usuario atualizar(Long id, AtualizarUsuarioRequest atualizarUsuarioRequest) throws UsuarioIdNaoExisteException, EmailJaExisteException {
         verificaSeExistePeloId(id);
 
-        verificaAmbiguidaeEmail(atualizarUsuarioRequest.getEmail());
+        verificaAmbiguidaeEmail(atualizarUsuarioRequest.getEmail(), id);
 
         Usuario usuario = buscarPeloId(id);
-        Long idEndereco = usuario.getEndereco().getId();
 
-        Endereco endereco = new Endereco(idEndereco,
-                atualizarUsuarioRequest.getEndereco().getCep(),
-                atualizarUsuarioRequest.getEndereco().getLogradouro(),
-                atualizarUsuarioRequest.getEndereco().getNumero(),
-                atualizarUsuarioRequest.getEndereco().getComplemento(),
-                atualizarUsuarioRequest.getEndereco().getBairro(),
-                atualizarUsuarioRequest.getEndereco().getCidade(),
-                atualizarUsuarioRequest.getEndereco().getEstado());
+        if(usuario.getEndereco() == null){
+            if (atualizarUsuarioRequest.getEndereco() != null){
+                Endereco endereco = Endereco.builder()
+                    .cep(atualizarUsuarioRequest.getEndereco().getCep())
+                    .logradouro(atualizarUsuarioRequest.getEndereco().getLogradouro())
+                    .numero(atualizarUsuarioRequest.getEndereco().getNumero())
+                    .complemento(atualizarUsuarioRequest.getEndereco().getComplemento())
+                    .bairro(atualizarUsuarioRequest.getEndereco().getBairro())
+                    .cidade(atualizarUsuarioRequest.getEndereco().getCidade())
+                    .estado(atualizarUsuarioRequest.getEndereco().getEstado())
+                    .build();
+                usuario.setEndereco(endereco);
+            } else{
+                usuario.setEndereco(null);
+            }
+        }else{
+            if (atualizarUsuarioRequest.getEndereco() != null){
+                Long idEndereco = usuario.getEndereco().getId();
+                Endereco endereco = Endereco.builder()
+                        .id(idEndereco)
+                        .cep(atualizarUsuarioRequest.getEndereco().getCep())
+                        .logradouro(atualizarUsuarioRequest.getEndereco().getLogradouro())
+                        .numero(atualizarUsuarioRequest.getEndereco().getNumero())
+                        .complemento(atualizarUsuarioRequest.getEndereco().getComplemento())
+                        .bairro(atualizarUsuarioRequest.getEndereco().getBairro())
+                        .cidade(atualizarUsuarioRequest.getEndereco().getCidade())
+                        .estado(atualizarUsuarioRequest.getEndereco().getEstado())
+                        .build();
+                usuario.setEndereco(endereco);
+            } else{
 
+                usuario.setEndereco(null);
+            }
+        }
         usuario.setNome(atualizarUsuarioRequest.getNome());
         usuario.setEmail(atualizarUsuarioRequest.getEmail());
-        usuario.setEndereco(endereco);
         usuario.setSenha(atualizarUsuarioRequest.getSenha());
         usuario.setDataNascimento(atualizarUsuarioRequest.getDataNascimento());
 
@@ -86,8 +109,9 @@ public class UsuarioService {
         }
     }
 
-    private void verificaAmbiguidaeEmail(String email) throws EmailJaExisteException {
+    private void verificaAmbiguidaeEmail(String email, Long id) throws EmailJaExisteException {
         if (repository.existsByEmail(email)) {
+            if (!repository.findById(id).get().getEmail().equals(email))
             throw new EmailJaExisteException(email);
         }
     }
