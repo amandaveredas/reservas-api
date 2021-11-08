@@ -15,9 +15,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UsuarioService {
+    private UsuarioRepository repository;
 
     @Autowired
-    UsuarioRepository repository;
+    public UsuarioService(UsuarioRepository repository) {
+        this.repository = repository;
+    }
+
 
     public Usuario salvar(Usuario usuario) throws EmailJaExisteException, CpfJaExisteException {
         verificaAmbiguidaeEmailELancaException(usuario.getEmail(), usuario.getId());
@@ -42,10 +46,9 @@ public class UsuarioService {
 
     public Usuario atualizar(Long id, AtualizarUsuarioRequest atualizarUsuarioRequest) throws UsuarioIdNaoExisteException, EmailJaExisteException {
         verificaSeExistePeloIdELancaException(id);
+        Usuario usuario = buscarPeloId(id);
 
         verificaAmbiguidaeEmailELancaException(atualizarUsuarioRequest.getEmail(), id);
-
-        Usuario usuario = buscarPeloId(id);
 
         if(usuario.getEndereco() == null){
             if (atualizarUsuarioRequest.getEndereco() != null){

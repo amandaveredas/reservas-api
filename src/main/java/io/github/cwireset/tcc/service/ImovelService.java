@@ -11,27 +11,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Service
 public class ImovelService {
 
+    private ImovelRepository repository;
+    private UsuarioService usuarioService;
+    private AnuncioService anuncioService;
+
     @Autowired
-    ImovelRepository repository;
-    @Autowired
-    UsuarioService usuarioService;
-    @Autowired
-    AnuncioService anuncioService;
+    public ImovelService(ImovelRepository repository, UsuarioService usuarioService, AnuncioService anuncioService) {
+        this.repository = repository;
+        this.usuarioService = usuarioService;
+        this.anuncioService = anuncioService;
+    }
 
     public Imovel salvar(CadastrarImovelRequest cadastrarImovelRequest) throws UsuarioIdNaoExisteException {
 
         Usuario proprietario = usuarioService.buscarPeloId(cadastrarImovelRequest.getIdProprietario());
 
-        Imovel imovel = new Imovel();
-        imovel.setIdentificacao(cadastrarImovelRequest.getIdentificacao());
-        imovel.setTipoImovel(cadastrarImovelRequest.getTipoImovel());
-        imovel.setEndereco(cadastrarImovelRequest.getEndereco());
-        imovel.setProprietario(proprietario);
-        imovel.setCaracteristicas(cadastrarImovelRequest.getCaracteristicas());
+        Imovel imovel = Imovel.builder()
+                .identificacao(cadastrarImovelRequest.getIdentificacao())
+                .tipoImovel(cadastrarImovelRequest.getTipoImovel())
+                .endereco(cadastrarImovelRequest.getEndereco())
+                .proprietario(proprietario)
+                .caracteristicas(cadastrarImovelRequest.getCaracteristicas())
+                .build();
 
         return repository.save(imovel);
     }
@@ -40,18 +46,18 @@ public class ImovelService {
         return repository.findAll(pageable);
     }
 
-    public Page<Imovel> buscarImoveisPorProprietario(Pageable pageable, Long idProprietario) {
+    public Page<Imovel> buscarImoveisPorProprietario(@ApiIgnore Pageable pageable, Long idProprietario) {
         Usuario proprietario = null;
         try {
             proprietario = usuarioService.buscarPeloId(idProprietario);
             return repository.findAllByProprietario(pageable, proprietario);
         } catch (UsuarioIdNaoExisteException e) {
-            return null;
+            return repository.findAllByProprietario(pageable, null);
         }
     }
 
     public Imovel buscarPeloId(Long idImovel) throws ImovelIdNaoExisteException {
-        verificaSeImovelExiste(idImovel);
+        verificaSeImovelExisteELancaException(idImovel);
         return repository.findById(idImovel).get();
     }
 
@@ -64,7 +70,7 @@ public class ImovelService {
         repository.deleteById(idImovel);
     }
 
-    private void verificaSeImovelExiste(Long idImovel) throws ImovelIdNaoExisteException {
+    private void verificaSeImovelExisteELancaException(Long idImovel) throws ImovelIdNaoExisteException {
         if(!repository.existsById(idImovel)) throw new ImovelIdNaoExisteException(idImovel);
     }
 }

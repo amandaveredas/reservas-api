@@ -33,9 +33,7 @@ public class ImovelController {
     @GetMapping
     public Page<Imovel> listarTodos(@PageableDefault(
             sort = "identificacao",
-            direction = Sort.Direction.ASC,
-            page = 0,
-            size = 10) @ApiIgnore Pageable pageable) {
+            direction = Sort.Direction.ASC) @ApiIgnore Pageable pageable) {
 
         return imovelService.buscarTodos(pageable);
     }
