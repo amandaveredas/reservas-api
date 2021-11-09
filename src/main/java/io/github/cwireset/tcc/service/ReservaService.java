@@ -10,11 +10,8 @@ import io.github.cwireset.tcc.response.InformacaoReservaResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.SecondaryTable;
-import javax.validation.constraints.AssertTrue;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -52,8 +49,7 @@ public class ReservaService {
         if(dataInicialRequest.isEqual(dataIFinalRequest))
             throw new PeriodoInvalidoException("Período inválido! O número mínimo de diárias precisa ser maior ou igual à 1.");
 
-        Long idAnunciante = anuncio.getAnunciante().getId();
-        if (cadastrarReservaRequest.getIdSolicitante() == idAnunciante)
+        if (solicitante.getId() == anuncio.getAnunciante().getId())
             throw new SolicitanteIgualAnuncianteException();
 
         List<Reserva> reservasCoincidentes = repository.findAllByPeriodo_DataHoraInicialIsAfterOrPeriodo_DataHoraFinalIsBefore(dataHoraInicialRequest, dataHoraFinalRequest);
