@@ -10,12 +10,15 @@ import io.github.cwireset.tcc.response.InformacaoReservaResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.SecondaryTable;
 import javax.validation.constraints.AssertTrue;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -92,12 +95,16 @@ public class ReservaService {
         pagamento.setValorTotal(valorTotal);
         pagamento.setStatus(StatusPagamento.PENDENTE);
 
+        //formatando data
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dataRegistroFormatada = LocalDateTime.parse(LocalDateTime.now().format(formatter), formatter);
+
         //setando e salvando dados da reserva
         reserva.setSolicitante(solicitante);
         reserva.setAnuncio(anuncio);
         reserva.setPeriodo(periodoAjustado);
         reserva.setQuantidadePessoas(quantidadePessoas);
-        reserva.setDataHoraReserva(LocalDateTime.now());
+        reserva.setDataHoraReserva(dataRegistroFormatada);
         reserva.setPagamento(pagamento);
         repository.save(reserva);
 

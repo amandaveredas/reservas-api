@@ -23,8 +23,13 @@ import java.time.LocalDateTime;
 @RequestMapping("/reservas")
 public class ReservaController {
 
+
+    private ReservaService reservaService;
+
     @Autowired
-    ReservaService reservaService;
+    public ReservaController(ReservaService reservaService) {
+        this.reservaService = reservaService;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -48,9 +53,7 @@ public class ReservaController {
     @GetMapping("/anuncios/anunciantes/{idAnunciante}")
     public Page<Reserva> listarPorAnunciante( @PathVariable Long idAnunciante,
                                                @PageableDefault(sort = "periodo_dataHoraFinal",
-                                                       direction = Sort.Direction.DESC,
-                                                       page = 0,
-                                                       size = 10) @ApiIgnore Pageable pageable ){
+                                                       direction = Sort.Direction.DESC) @ApiIgnore Pageable pageable ){
 
 
         return reservaService.buscarReservasPorAnunciante(idAnunciante, pageable);
