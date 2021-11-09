@@ -52,7 +52,6 @@ public class AnuncioService {
     }
 
 
-
     public Page<Anuncio> listarTodos(Pageable pageable) {
         return repository.findAllByAtivoIsTrue(pageable);
     }
@@ -70,7 +69,6 @@ public class AnuncioService {
         if(!repository.existsById(idAnuncio)) throw new AnuncioNaoExisteException(idAnuncio);
         Anuncio anuncio = repository.findById(idAnuncio).get();
         if (anuncio.isAtivo() == false) throw new AnuncioNaoExisteException(idAnuncio);
-
         anuncio.setAtivo(false);
         repository.save(anuncio);
 

@@ -38,9 +38,7 @@ public class AnuncioController {
     @GetMapping
     public Page<Anuncio> listarTodosAnuncios(@PageableDefault(
             sort = "valorDiaria",
-            direction = Sort.Direction.ASC,
-            page = 0,
-            size = 10) @ApiIgnore Pageable pageable) {
+            direction = Sort.Direction.ASC) @ApiIgnore Pageable pageable) {
 
         return anuncioService.listarTodos(pageable);
     }
@@ -48,9 +46,7 @@ public class AnuncioController {
     @GetMapping("/anunciantes/{idAnunciante}")
     public Page<Anuncio> listarAnunciosPorAnunciante(@PathVariable Long idAnunciante, @PageableDefault(
             sort = "valorDiaria",
-            direction = Sort.Direction.ASC,
-            page = 0,
-            size = 10) @ApiIgnore Pageable pageable) {
+            direction = Sort.Direction.ASC) @ApiIgnore Pageable pageable) {
 
         return anuncioService.buscarAnunciosPorAnunciante(idAnunciante, pageable);
     }
