@@ -23,8 +23,13 @@ import javax.validation.Valid;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
+
+    private UsuarioService usuarioService;
+
     @Autowired
-    UsuarioService usuarioService;
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

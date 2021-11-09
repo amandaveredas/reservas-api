@@ -22,8 +22,12 @@ import javax.validation.Valid;
 @RequestMapping("/anuncios")
 public class AnuncioController {
 
+    private AnuncioService anuncioService;
+
     @Autowired
-    AnuncioService anuncioService;
+    public AnuncioController(AnuncioService anuncioService) {
+        this.anuncioService = anuncioService;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

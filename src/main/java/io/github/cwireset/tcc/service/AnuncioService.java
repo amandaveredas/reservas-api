@@ -17,37 +17,41 @@ import org.springframework.stereotype.Service;
 @Service
 public class AnuncioService {
 
-    @Autowired
-    AnuncioRepository repository;
-    @Autowired
-    ImovelService imovelService;
-    @Autowired
-    UsuarioService usuarioService;
+    private AnuncioRepository repository;
+    private ImovelService imovelService;
+    private UsuarioService usuarioService;
 
+    @Autowired
+    public AnuncioService(AnuncioRepository repository, ImovelService imovelService, UsuarioService usuarioService) {
+        this.repository = repository;
+        this.imovelService = imovelService;
+        this.usuarioService = usuarioService;
+    }
 
     public Anuncio cadastrar(CadastrarAnuncioRequest cadastrarAnuncioRequest) throws ImovelIdNaoExisteException, UsuarioIdNaoExisteException, ImovelAmbiguidadeAnunciosException {
 
         Long idImovel = cadastrarAnuncioRequest.getIdImovel();
         Imovel imovel = imovelService.buscarPeloId(idImovel);
+
+
         if(repository.existsByImovel(imovel)) throw new ImovelAmbiguidadeAnunciosException(idImovel);
 
         Usuario anunciante = usuarioService.buscarPeloId(cadastrarAnuncioRequest.getIdAnunciante());
 
-        Anuncio anuncio = new Anuncio();
-        anuncio.setTipoAnuncio(cadastrarAnuncioRequest.getTipoAnuncio());
-        anuncio.setImovel(imovel);
-        anuncio.setAnunciante(anunciante);
-        anuncio.setValorDiaria(cadastrarAnuncioRequest.getValorDiaria());
-        anuncio.setFormasAceitas(cadastrarAnuncioRequest.getFormasAceitas());
-        anuncio.setDescricao(cadastrarAnuncioRequest.getDescricao());
-        anuncio.setAtivo(true);
+        Anuncio anuncio = Anuncio.builder()
+                .tipoAnuncio(cadastrarAnuncioRequest.getTipoAnuncio())
+                .imovel(imovel)
+                .anunciante(anunciante)
+                .valorDiaria(cadastrarAnuncioRequest.getValorDiaria())
+                .formasAceitas(cadastrarAnuncioRequest.getFormasAceitas())
+                .descricao(cadastrarAnuncioRequest.getDescricao())
+                .ativo(true)
+                .build();
 
         return repository.save(anuncio);
     }
 
-    public boolean verificaSeExisteAnuncioPorImovel(Imovel imovel){
-        return (repository.existsByImovel(imovel));
-    }
+
 
     public Page<Anuncio> listarTodos(Pageable pageable) {
         return repository.findAllByAtivoIsTrue(pageable);

@@ -21,8 +21,13 @@ import javax.validation.Valid;
 @RequestMapping("/imoveis")
 public class ImovelController {
 
+
+    private ImovelService imovelService;
+
     @Autowired
-    ImovelService imovelService;
+    public ImovelController(ImovelService imovelService) {
+        this.imovelService = imovelService;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

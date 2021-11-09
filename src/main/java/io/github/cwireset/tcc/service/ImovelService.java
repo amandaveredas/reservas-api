@@ -18,13 +18,13 @@ public class ImovelService {
 
     private ImovelRepository repository;
     private UsuarioService usuarioService;
-    private AnuncioService anuncioService;
+    private VerificaAnuncioPorImovelService verificaAnuncioPorImovelService;
 
     @Autowired
-    public ImovelService(ImovelRepository repository, UsuarioService usuarioService, AnuncioService anuncioService) {
+    public ImovelService(ImovelRepository repository, UsuarioService usuarioService, VerificaAnuncioPorImovelService verificaAnuncioPorImovelService) {
         this.repository = repository;
         this.usuarioService = usuarioService;
-        this.anuncioService = anuncioService;
+        this.verificaAnuncioPorImovelService = verificaAnuncioPorImovelService;
     }
 
     public Imovel salvar(CadastrarImovelRequest cadastrarImovelRequest) throws UsuarioIdNaoExisteException {
@@ -64,7 +64,7 @@ public class ImovelService {
     public void excluir(Long idImovel) throws ImovelIdNaoExisteException, ImovelPossuiAnuncioException {
         Imovel imovel = buscarPeloId(idImovel);
 
-        if (anuncioService.verificaSeExisteAnuncioPorImovel(imovel))
+        if (verificaAnuncioPorImovelService.verificaSeExisteAnuncioPorImovel(imovel))
         throw new ImovelPossuiAnuncioException();
 
         repository.deleteById(idImovel);

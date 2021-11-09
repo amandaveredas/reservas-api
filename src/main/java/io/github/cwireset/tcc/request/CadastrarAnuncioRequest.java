@@ -4,7 +4,6 @@ import io.github.cwireset.tcc.domain.FormaPagamento;
 import io.github.cwireset.tcc.domain.TipoAnuncio;
 import lombok.*;
 
-import javax.persistence.ElementCollection;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
@@ -32,7 +31,6 @@ public class CadastrarAnuncioRequest {
     private BigDecimal valorDiaria;
 
     @NotNull
-    @ElementCollection
     @Enumerated(EnumType.STRING)
     private List<FormaPagamento> formasAceitas;
 
