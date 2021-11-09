@@ -40,7 +40,6 @@ public class ReservaService {
         Integer quantidadePessoas = cadastrarReservaRequest.getQuantidadePessoas();
         Usuario solicitante = usuarioService.buscarPeloId(cadastrarReservaRequest.getIdSolicitante());
 
-
         if (dataHoraInicialRequest.isAfter(dataHoraFinalRequest))
             throw new PeriodoInvalidoException("Período inválido! A data final da reserva precisa ser maior do que a data inicial.");
 
@@ -52,20 +51,9 @@ public class ReservaService {
         if (solicitante.getId() == anuncio.getAnunciante().getId())
             throw new SolicitanteIgualAnuncianteException();
 
-        List<Reserva> reservasCoincidentes = repository.findAllByPeriodo_DataHoraInicialIsAfterOrPeriodo_DataHoraFinalIsBefore(dataHoraInicialRequest, dataHoraFinalRequest);
-        for (Reserva r: reservasCoincidentes){
-            if (r.getAnuncio().getId() == cadastrarReservaRequest.getIdAnuncio()){
-                if(r.getPeriodo().getDataHoraInicial().isBefore(dataHoraFinalRequest) &&
-                        r.getPeriodo().getDataHoraFinal().isAfter(dataHoraInicialRequest)){
-                    if (r.getPagamento().getStatus() == StatusPagamento.PENDENTE ||
-                            r.getPagamento().getStatus() == StatusPagamento.PAGO){
-                        throw new PeriodoInvalidoException("Este anuncio já esta reservado para o período informado.");
-                    }
-                }
-            }
-
-
-        }
+        List<Reserva> reservasNoPeriodo = repository.findAllByPeriodo_DataHoraInicialIsGreaterThanEqualOrPeriodo_DataHoraFinalIsLessThanEqual(dataHoraInicialRequest, dataHoraFinalRequest);
+        if(verificaSeExisteReservasNoMesmoPeriodo(reservasNoPeriodo, cadastrarReservaRequest))
+            throw new PeriodoInvalidoException("Este anuncio já esta reservado para o período informado.");
 
         if (tipoImovel.equals(TipoImovel.HOTEL) && quantidadePessoas <2)
             throw new NumeroMinimoPessoasException(2, TipoImovel.HOTEL.getDescricao());
@@ -250,5 +238,21 @@ public class ReservaService {
         return true;
     }
 
+    private boolean verificaSeExisteReservasNoMesmoPeriodo(List<Reserva> reservasNoPeriodo, CadastrarReservaRequest cadastrarReservaRequest){
+        LocalDateTime dataHoraInicialRequest = cadastrarReservaRequest.getPeriodo().getDataHoraInicial();
+        LocalDateTime dataHoraFinalRequest = cadastrarReservaRequest.getPeriodo().getDataHoraFinal();
 
+        for (Reserva r: reservasNoPeriodo){
+            if (r.getAnuncio().getId() == cadastrarReservaRequest.getIdAnuncio()){
+                if(r.getPeriodo().getDataHoraInicial().isBefore(dataHoraFinalRequest) &&
+                        r.getPeriodo().getDataHoraFinal().isAfter(dataHoraInicialRequest)){
+                    if (r.getPagamento().getStatus() == StatusPagamento.PENDENTE ||
+                            r.getPagamento().getStatus() == StatusPagamento.PAGO){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

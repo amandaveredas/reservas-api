@@ -26,4 +26,5 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     Page<Reserva> findReservasByAnuncio_Anunciante(Usuario anunciante, Pageable pageable);
     boolean existsById(Long idReserva);
     Optional<Reserva> findById(Long idReserva);
+    List<Reserva> findAllByPeriodo_DataHoraInicialIsGreaterThanEqualOrPeriodo_DataHoraFinalIsLessThanEqual(LocalDateTime dataHoraInicio, LocalDateTime dataHoraFinal);
 }
