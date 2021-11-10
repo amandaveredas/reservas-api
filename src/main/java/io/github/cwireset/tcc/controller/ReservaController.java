@@ -43,10 +43,7 @@ public class ReservaController {
                                                @PageableDefault(sort = "periodo_dataHoraFinal",
             direction = Sort.Direction.DESC) @ApiIgnore Pageable pageable ){
 
-        LocalDateTime dataHoraInicial = periodo.getDataHoraInicial();
-        LocalDateTime dataHoraFinal = periodo.getDataHoraFinal();
-
-        return reservaService.buscarReservasPorSolicitante(idSolicitante, dataHoraInicial,dataHoraFinal, pageable);
+        return reservaService.buscarReservasPorSolicitante(idSolicitante, periodo, pageable);
     }
 
 

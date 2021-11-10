@@ -9,6 +9,7 @@ import io.github.cwireset.tcc.response.DadosSolicitanteResponse;
 import io.github.cwireset.tcc.response.InformacaoReservaResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -78,10 +81,6 @@ public class ReservaService {
 
         Reserva reserva = new Reserva();
 
-
-
-
-
         //Pagamento da reserva
         Pagamento pagamento = new Pagamento();
         BigDecimal valorTotal = valorTotalReserva(dataInicialRequest, dataIFinalRequest, anuncio.getValorDiaria());
@@ -128,18 +127,20 @@ public class ReservaService {
     }
 
     public Page<Reserva> buscarReservasPorSolicitante(Long idSolicitante,
-                                                      LocalDateTime inicioPeriodo,
-                                                      LocalDateTime fimPeriodo,
+                                                      Periodo periodo,
                                                       Pageable pageable) {
+
+        LocalDateTime inicioPeriodo = periodo.getDataHoraInicial();
+        LocalDateTime fimPeriodo = periodo.getDataHoraFinal();
 
         try {
             Usuario solicitante = usuarioService.buscarPeloId(idSolicitante);
             if(inicioPeriodo == null && fimPeriodo == null){
                 return repository.findAllBySolicitante(solicitante, pageable);
             }else if (inicioPeriodo == null){
-                return repository.findReservasBySolicitanteAndPeriodo_DataHoraFinalIsBefore(solicitante, fimPeriodo,pageable);
+                return Page.empty(pageable);
             }else if (fimPeriodo == null){
-                return repository.findReservasBySolicitanteAndPeriodo_DataHoraInicialIsAfter(solicitante, inicioPeriodo, pageable);
+                return Page.empty(pageable);
             }else{
                 return repository.findReservasBySolicitanteAndPeriodo_DataHoraInicialIsAfterAndPeriodo_DataHoraFinalIsBefore(solicitante,inicioPeriodo,fimPeriodo,pageable);
             }
