@@ -145,7 +145,7 @@ public class ReservaService {
                 return repository.findReservasBySolicitanteAndPeriodo_DataHoraInicialIsAfterAndPeriodo_DataHoraFinalIsBefore(solicitante,inicioPeriodo,fimPeriodo,pageable);
             }
         } catch (UsuarioIdNaoExisteException e) {
-            return null;
+            return Page.empty(pageable);
         }
     }
 
