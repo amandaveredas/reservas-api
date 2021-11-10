@@ -154,7 +154,7 @@ public class ReservaService {
             Usuario anunciante = usuarioService.buscarPeloId(idAnunciante);
             return repository.findReservasByAnuncio_Anunciante(anunciante,pageable);
         } catch (UsuarioIdNaoExisteException e) {
-            return null;
+            return Page.empty(pageable);
         }
     }
 
