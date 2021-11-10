@@ -1,15 +1,12 @@
 package io.github.cwireset.tcc.repository;
 
-import io.github.cwireset.tcc.domain.Periodo;
 import io.github.cwireset.tcc.domain.Reserva;
-import io.github.cwireset.tcc.domain.StatusPagamento;
 import io.github.cwireset.tcc.domain.Usuario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +14,6 @@ import java.util.Optional;
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
-    List<Reserva> findAllByPeriodo_DataHoraInicialIsAfterOrPeriodo_DataHoraFinalIsBefore(LocalDateTime dataHoraInicio, LocalDateTime dataHoraFinal);
     Reserva save(Reserva reserva);
     Page<Reserva> findAllBySolicitante(Usuario solicitante, Pageable pageable);
     Page<Reserva> findReservasBySolicitanteAndPeriodo_DataHoraInicialIsAfter(Usuario solicitante, LocalDateTime inicio, Pageable pageable);
@@ -26,5 +22,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     Page<Reserva> findReservasByAnuncio_Anunciante(Usuario anunciante, Pageable pageable);
     boolean existsById(Long idReserva);
     Optional<Reserva> findById(Long idReserva);
-    List<Reserva> findAllByPeriodo_DataHoraInicialIsGreaterThanEqualOrPeriodo_DataHoraFinalIsLessThanEqual(LocalDateTime dataHoraInicio, LocalDateTime dataHoraFinal);
+    List<Reserva> findAllByPeriodo_DataHoraInicialIsLessThanEqualAndPeriodo_DataHoraFinalIsGreaterThanEqualOrPeriodo_DataHoraInicialIsLessThanEqualAndPeriodo_DataHoraFinalIsGreaterThanEqualOrPeriodo_DataHoraInicialIsGreaterThanAndPeriodo_DataHoraFinalIsLessThan(LocalDateTime dataHoraInicio,LocalDateTime dataHoraInicio1, LocalDateTime dataHoraFinal,LocalDateTime dataHoraFinal1, LocalDateTime dataHoraIncio2,LocalDateTime dataHoraFinal2);
+
 }

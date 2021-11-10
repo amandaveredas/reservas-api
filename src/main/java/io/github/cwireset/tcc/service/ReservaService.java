@@ -51,18 +51,12 @@ public class ReservaService {
         if (solicitante.getId() == anuncio.getAnunciante().getId())
             throw new SolicitanteIgualAnuncianteException();
 
-        List<Reserva> reservasNoPeriodo = repository.findAllByPeriodo_DataHoraInicialIsGreaterThanEqualOrPeriodo_DataHoraFinalIsLessThanEqual(dataHoraInicialRequest, dataHoraFinalRequest);
-        if(verificaSeExisteReservasNoMesmoPeriodo(reservasNoPeriodo, cadastrarReservaRequest))
-            throw new PeriodoInvalidoException("Este anuncio já esta reservado para o período informado.");
-
         if (tipoImovel.equals(TipoImovel.HOTEL) && quantidadePessoas <2)
             throw new NumeroMinimoPessoasException(2, TipoImovel.HOTEL.getDescricao());
 
         long quantDiarias = ChronoUnit.DAYS.between(dataInicialRequest, dataIFinalRequest);
         if (tipoImovel.equals(TipoImovel.POUSADA) && quantDiarias<5)
             throw new NumeroMinimoDiariasException(5, TipoImovel.POUSADA.getDescricao());
-
-        Reserva reserva = new Reserva();
 
         //Período da reserva
         final int horaInicioReserva = 14;
@@ -72,6 +66,21 @@ public class ReservaService {
         Periodo periodoAjustado = new Periodo();
         periodoAjustado.setDataHoraInicial(dataInicioReservaAjustada);
         periodoAjustado.setDataHoraFinal(dataFimoReservaAjustada);
+
+        Reserva reservaRequestHoraAjustada = Reserva.builder()
+                .periodo(periodoAjustado)
+                .anuncio(anuncio)
+                .build();
+
+        List<Reserva> reservasNoPeriodo = repository.findAllByPeriodo_DataHoraInicialIsLessThanEqualAndPeriodo_DataHoraFinalIsGreaterThanEqualOrPeriodo_DataHoraInicialIsLessThanEqualAndPeriodo_DataHoraFinalIsGreaterThanEqualOrPeriodo_DataHoraInicialIsGreaterThanAndPeriodo_DataHoraFinalIsLessThan(dataHoraInicialRequest, dataHoraInicialRequest,dataHoraFinalRequest,dataHoraFinalRequest, dataHoraInicialRequest,dataHoraFinalRequest);
+        if(verificaSeExisteReservasNoMesmoPeriodo(reservasNoPeriodo, reservaRequestHoraAjustada))
+            throw new PeriodoInvalidoException("Este anuncio já esta reservado para o período informado.");
+
+        Reserva reserva = new Reserva();
+
+
+
+
 
         //Pagamento da reserva
         Pagamento pagamento = new Pagamento();
@@ -238,12 +247,12 @@ public class ReservaService {
         return true;
     }
 
-    private boolean verificaSeExisteReservasNoMesmoPeriodo(List<Reserva> reservasNoPeriodo, CadastrarReservaRequest cadastrarReservaRequest){
-        LocalDateTime dataHoraInicialRequest = cadastrarReservaRequest.getPeriodo().getDataHoraInicial();
-        LocalDateTime dataHoraFinalRequest = cadastrarReservaRequest.getPeriodo().getDataHoraFinal();
+    private boolean verificaSeExisteReservasNoMesmoPeriodo(List<Reserva> reservasNoPeriodo, Reserva reservaRequestHoraAjustada){
+        LocalDateTime dataHoraInicialRequest = reservaRequestHoraAjustada.getPeriodo().getDataHoraInicial();
+        LocalDateTime dataHoraFinalRequest = reservaRequestHoraAjustada.getPeriodo().getDataHoraFinal();
 
         for (Reserva r: reservasNoPeriodo){
-            if (r.getAnuncio().getId() == cadastrarReservaRequest.getIdAnuncio()){
+            if (r.getAnuncio().getId() == reservaRequestHoraAjustada.getAnuncio().getId()){
                 if(r.getPeriodo().getDataHoraInicial().isBefore(dataHoraFinalRequest) &&
                         r.getPeriodo().getDataHoraFinal().isAfter(dataHoraInicialRequest)){
                     if (r.getPagamento().getStatus() == StatusPagamento.PENDENTE ||
