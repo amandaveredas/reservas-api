@@ -6,7 +6,9 @@ import io.github.cwireset.tcc.domain.Reserva;
 import io.github.cwireset.tcc.exception.*;
 import io.github.cwireset.tcc.request.CadastrarReservaRequest;
 import io.github.cwireset.tcc.response.InformacaoReservaResponse;
-import io.github.cwireset.tcc.service.ReservaService;
+import io.github.cwireset.tcc.service.reserva.BuscaReservaService;
+import io.github.cwireset.tcc.service.reserva.PagamentoReservaService;
+import io.github.cwireset.tcc.service.reserva.CadastraReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,24 +19,27 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/reservas")
 public class ReservaController {
 
 
-    private ReservaService reservaService;
+    private CadastraReservaService cadastraReservaService;
+    private PagamentoReservaService pagamentoReservaService;
+    private BuscaReservaService buscaReservaService;
 
     @Autowired
-    public ReservaController(ReservaService reservaService) {
-        this.reservaService = reservaService;
+    public ReservaController(CadastraReservaService cadastraReservaService, PagamentoReservaService pagamentoReservaService, BuscaReservaService buscaReservaService) {
+        this.cadastraReservaService = cadastraReservaService;
+        this.pagamentoReservaService = pagamentoReservaService;
+        this.buscaReservaService = buscaReservaService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public InformacaoReservaResponse realizarReserva(@RequestBody @Valid CadastrarReservaRequest cadastrarReservaRequest) throws AnuncioNaoExisteException, UsuarioIdNaoExisteException, SolicitanteIgualAnuncianteException, NumeroMinimoPessoasException, PeriodoInvalidoException, NumeroMinimoDiariasException {
-        return reservaService.cadastrarReserva(cadastrarReservaRequest);
+        return cadastraReservaService.cadastrarReserva(cadastrarReservaRequest);
     }
 
     @GetMapping("/solicitantes/{idSolicitante}")
@@ -43,7 +48,7 @@ public class ReservaController {
                                                @PageableDefault(sort = "periodo_dataHoraFinal",
             direction = Sort.Direction.DESC) @ApiIgnore Pageable pageable ){
 
-        return reservaService.buscarReservasPorSolicitante(idSolicitante, periodo, pageable);
+        return buscaReservaService.buscarReservasPorSolicitante(idSolicitante, periodo, pageable);
     }
 
 
@@ -53,23 +58,23 @@ public class ReservaController {
                                                        direction = Sort.Direction.DESC) @ApiIgnore Pageable pageable ){
 
 
-        return reservaService.buscarReservasPorAnunciante(idAnunciante, pageable);
+        return buscaReservaService.buscarReservasPorAnunciante(idAnunciante, pageable);
     }
 
     @PutMapping("/{idReserva}/pagamentos")
     public void pagarReserva(@PathVariable Long idReserva, @RequestBody String formaPagamentoRequest) throws FormaPagaMentoInvalidaException, ReservaNaoPendenteException, ReservaNaoExisteException {
         Enum<FormaPagamento> formaPagamento = FormaPagamento.valueOf(formaPagamentoRequest.substring(1,formaPagamentoRequest.length()-1));
-        reservaService.pagar(idReserva, formaPagamento);
+        pagamentoReservaService.pagar(idReserva, formaPagamento);
     }
 
     @PutMapping("/{idReserva}/pagamentos/cancelar")
     public void cancelarReserva(@PathVariable Long idReserva) throws ReservaNaoPendenteException, ReservaNaoExisteException {
-        reservaService.cancelar(idReserva);
+        pagamentoReservaService.cancelar(idReserva);
     }
 
     @PutMapping("/{idReserva}/pagamentos/estornar")
     public void estornarReserva(@PathVariable Long idReserva) throws ReservaNaoExisteException, ReservaNaoPagaException {
-        reservaService.estornar(idReserva);
+        pagamentoReservaService.estornar(idReserva);
     }
 
 
