@@ -32,6 +32,7 @@ public class Usuario {
     private String cpf;
     @NotNull
     private LocalDate dataNascimento;
+    private String avatar;
 
     @Valid
     @ManyToOne(cascade = CascadeType.ALL)

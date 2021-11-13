@@ -1,6 +1,7 @@
 package io.github.cwireset.tcc.service;
 
 import io.github.cwireset.tcc.domain.Endereco;
+import io.github.cwireset.tcc.domain.Imagem;
 import io.github.cwireset.tcc.domain.Usuario;
 import io.github.cwireset.tcc.exception.CpfJaExisteException;
 import io.github.cwireset.tcc.exception.EmailJaExisteException;
@@ -13,19 +14,23 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
+
 @Service
 public class UsuarioService {
     private UsuarioRepository repository;
+    private ImagemService imagemService;
 
     @Autowired
-    public UsuarioService(UsuarioRepository repository) {
+    public UsuarioService(UsuarioRepository repository, ImagemService imagemService) {
         this.repository = repository;
+        this.imagemService = imagemService;
     }
 
-
     public Usuario salvar(Usuario usuario) throws EmailJaExisteException, CpfJaExisteException {
-        verificaAmbiguidaeEmailELancaException(usuario.getEmail(), usuario.getId());
+        verificaAmbiguidadeEmailAoCadastrarELancaException(usuario.getEmail());
         verificaAmbiguidadeCpfElancaException(usuario);
+        usuario.setAvatar(imagemService.obterImagem().getLink());
         return repository.save(usuario);
 
     }
@@ -48,7 +53,7 @@ public class UsuarioService {
         verificaSeExistePeloIdELancaException(id);
         Usuario usuario = buscarPeloId(id);
 
-        verificaAmbiguidaeEmailELancaException(atualizarUsuarioRequest.getEmail(), id);
+        verificaAmbiguidadeEmailAoAtualizarELancaException(atualizarUsuarioRequest.getEmail(), id);
 
         if(usuario.getEndereco() == null){
             if (atualizarUsuarioRequest.getEndereco() != null){
@@ -112,7 +117,13 @@ public class UsuarioService {
         }
     }
 
-    private void verificaAmbiguidaeEmailELancaException(String email, Long id) throws EmailJaExisteException {
+    private void verificaAmbiguidadeEmailAoCadastrarELancaException(String email) throws EmailJaExisteException {
+        if (repository.existsByEmail(email)) {
+            throw new EmailJaExisteException(email);
+        }
+    }
+
+    private void verificaAmbiguidadeEmailAoAtualizarELancaException(String email, Long id) throws EmailJaExisteException {
         if (repository.existsByEmail(email)) {
             if (!repository.findById(id).get().getEmail().equals(email))
             throw new EmailJaExisteException(email);
