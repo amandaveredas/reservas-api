@@ -15,9 +15,9 @@ import java.util.Optional;
 public interface AnuncioRepository extends JpaRepository<Anuncio, Long> {
 
     Anuncio save(Anuncio anuncio);
-    boolean existsByImovel(Imovel imovel);
+    boolean existsByImovelAndAtivoIsTrue(Imovel imovel);
     Page<Anuncio> findAllByAtivoIsTrue(Pageable pageable);
     Page<Anuncio> findAllByAtivoIsTrueAndAndAnuncianteEquals(Usuario anunciante, Pageable pageable);
     Optional<Anuncio> findById(Long id);
-    boolean existsById(Long id);
+    boolean existsByIdAndAtivoIsTrue(Long id);
 }

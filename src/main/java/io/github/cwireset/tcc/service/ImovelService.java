@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import springfox.documentation.annotations.ApiIgnore;
 
 @Service
 public class ImovelService {
@@ -64,10 +63,7 @@ public class ImovelService {
 
     public void excluir(Long idImovel) throws ImovelIdNaoExisteException, ImovelPossuiAnuncioException {
         Imovel imovel = buscarPeloId(idImovel);
-
-        if (verificaAnuncioPorImovelService.verificaSeExisteAnuncioPorImovel(imovel))
-        throw new ImovelPossuiAnuncioException();
-
+        verificaAnuncioPorImovelService.verificaSeImovelPodeSerExcluidoELancaExcecao(imovel);
         imovel.setAtivo(false);
         repository.save(imovel);
     }

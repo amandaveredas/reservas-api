@@ -1,6 +1,8 @@
 package io.github.cwireset.tcc.service;
 
 import io.github.cwireset.tcc.domain.Imovel;
+import io.github.cwireset.tcc.exception.ImovelAmbiguidadeAnunciosException;
+import io.github.cwireset.tcc.exception.ImovelPossuiAnuncioException;
 import io.github.cwireset.tcc.repository.AnuncioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,14 @@ public class VerificaAnuncioPorImovelService {
         this.repository = repository;
     }
 
-    public boolean verificaSeExisteAnuncioPorImovel(Imovel imovel){
-        return (repository.existsByImovel(imovel));
+    public void verificaSeImovelPodeSerExcluidoELancaExcecao(Imovel imovel) throws ImovelPossuiAnuncioException {
+        if (repository.existsByImovelAndAtivoIsTrue(imovel))
+            throw new ImovelPossuiAnuncioException();
+    }
+
+
+    public void verificaSeExisteAnuncioParaImovelELancaExcecao(Imovel imovel, Long idImovel) throws ImovelAmbiguidadeAnunciosException {
+        if (repository.existsByImovelAndAtivoIsTrue(imovel))
+            throw new ImovelAmbiguidadeAnunciosException(idImovel);
     }
 }
