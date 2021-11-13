@@ -1,6 +1,7 @@
 package io.github.cwireset.tcc.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
@@ -38,6 +39,7 @@ public class Anuncio {
 
     private String descricao;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean ativo;
 
 }

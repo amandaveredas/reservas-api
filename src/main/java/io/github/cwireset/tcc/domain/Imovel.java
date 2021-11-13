@@ -1,8 +1,10 @@
 package io.github.cwireset.tcc.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
@@ -33,5 +35,8 @@ public class Imovel {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "id_imovel")
     private List<CaracteristicaImovel> caracteristicas;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private boolean ativo;
 
 }

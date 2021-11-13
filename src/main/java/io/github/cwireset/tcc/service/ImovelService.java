@@ -37,22 +37,23 @@ public class ImovelService {
                 .endereco(cadastrarImovelRequest.getEndereco())
                 .proprietario(proprietario)
                 .caracteristicas(cadastrarImovelRequest.getCaracteristicas())
+                .ativo(true)
                 .build();
 
         return repository.save(imovel);
     }
 
     public Page<Imovel> buscarTodos(Pageable pageable) {
-        return repository.findAll(pageable);
+
+        return repository.findAllByAtivoIsTrue(pageable);
     }
 
-    public Page<Imovel> buscarImoveisPorProprietario(@ApiIgnore Pageable pageable, Long idProprietario) {
-        Usuario proprietario = null;
+    public Page<Imovel> buscarImoveisPorProprietario(Pageable pageable, Long idProprietario) {
         try {
-            proprietario = usuarioService.buscarPeloId(idProprietario);
-            return repository.findAllByProprietario(pageable, proprietario);
+            Usuario proprietario = usuarioService.buscarPeloId(idProprietario);
+            return repository.findAllByAtivoIsTrueAndProprietarioEquals(proprietario,pageable);
         } catch (UsuarioIdNaoExisteException e) {
-            return repository.findAllByProprietario(pageable, null);
+            return repository.findAllByProprietario(null,pageable);
         }
     }
 
@@ -67,10 +68,11 @@ public class ImovelService {
         if (verificaAnuncioPorImovelService.verificaSeExisteAnuncioPorImovel(imovel))
         throw new ImovelPossuiAnuncioException();
 
-        repository.deleteById(idImovel);
+        imovel.setAtivo(false);
+        repository.save(imovel);
     }
 
     private void verificaSeImovelExisteELancaException(Long idImovel) throws ImovelIdNaoExisteException {
-        if(!repository.existsById(idImovel)) throw new ImovelIdNaoExisteException(idImovel);
+        if(!repository.existsByIdAndAtivoIsTrue(idImovel)) throw new ImovelIdNaoExisteException(idImovel);
     }
 }

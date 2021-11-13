@@ -94,6 +94,7 @@ public class UsuarioService {
         usuario.setSenha(atualizarUsuarioRequest.getSenha());
         usuario.setDataNascimento(atualizarUsuarioRequest.getDataNascimento());
 
+
         repository.save(usuario);
 
         return usuario;

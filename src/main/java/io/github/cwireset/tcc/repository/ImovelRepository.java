@@ -1,5 +1,6 @@
 package io.github.cwireset.tcc.repository;
 
+import io.github.cwireset.tcc.domain.Anuncio;
 import io.github.cwireset.tcc.domain.Imovel;
 import io.github.cwireset.tcc.domain.Usuario;
 import org.springframework.data.domain.Page;
@@ -13,11 +14,11 @@ import java.util.Optional;
 public interface ImovelRepository extends JpaRepository<Imovel, Long> {
 
     Imovel save(Imovel imovel);
-    Page<Imovel> findAll(Pageable pageable);
-    Page<Imovel> findAllByProprietario(Pageable pageable, Usuario proprietario);
+    Page<Imovel> findAllByAtivoIsTrue(Pageable pageable);
+    Page<Imovel> findAllByAtivoIsTrueAndProprietarioEquals(Usuario proprietario, Pageable pageable);
     Optional<Imovel> findById(Long id);
-    boolean existsById(Long id);
-    void deleteById(Long id);
+    boolean existsByIdAndAtivoIsTrue(Long id);
+    Page<Imovel> findAllByProprietario(Usuario proprietario, Pageable pageable);
 
 
 }
