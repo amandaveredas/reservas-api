@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -39,4 +40,16 @@ public class Usuario {
     @JoinColumn(name = "id_endereco")
     private Endereco endereco;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(id, usuario.id) && Objects.equals(nome, usuario.nome) && Objects.equals(email, usuario.email) && Objects.equals(senha, usuario.senha) && Objects.equals(cpf, usuario.cpf) && Objects.equals(dataNascimento, usuario.dataNascimento) && Objects.equals(avatar, usuario.avatar) && Objects.equals(endereco, usuario.endereco);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, nome, email, senha, cpf, dataNascimento, avatar, endereco);
+    }
 }

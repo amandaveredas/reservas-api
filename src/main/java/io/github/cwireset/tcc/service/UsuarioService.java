@@ -1,7 +1,6 @@
 package io.github.cwireset.tcc.service;
 
 import io.github.cwireset.tcc.domain.Endereco;
-import io.github.cwireset.tcc.domain.Imagem;
 import io.github.cwireset.tcc.domain.Usuario;
 import io.github.cwireset.tcc.exception.CpfJaExisteException;
 import io.github.cwireset.tcc.exception.EmailJaExisteException;
@@ -13,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.awt.*;
 
 @Service
 public class UsuarioService {
