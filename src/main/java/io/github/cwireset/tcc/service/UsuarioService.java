@@ -27,7 +27,7 @@ public class UsuarioService {
     public Usuario salvar(Usuario usuario) throws EmailJaExisteException, CpfJaExisteException {
         verificaAmbiguidadeEmailAoCadastrarELancaException(usuario.getEmail());
         verificaAmbiguidadeCpfElancaException(usuario);
-        usuario.setAvatar(imagemService.obterImagem().getLink());
+        //usuario.setAvatar(imagemService.obterImagem().getLink());
         return repository.save(usuario);
 
     }
@@ -123,7 +123,8 @@ public class UsuarioService {
 
     private void verificaAmbiguidadeEmailAoAtualizarELancaException(String email, Long id) throws EmailJaExisteException {
         if (repository.existsByEmail(email)) {
-            if (!repository.findById(id).get().getEmail().equals(email))
+            Usuario usuario = repository.findById(id).get();
+            if (!usuario.getEmail().equals(email))
             throw new EmailJaExisteException(email);
         }
     }
