@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
@@ -21,14 +23,14 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
+    @NotBlank
     private String nome;
-    @NotNull
+    @NotBlank
     private String email;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @NotNull
+    @NotBlank
     private String senha;
-    @NotNull
+    @NotBlank
     @Pattern(regexp = "[0-9]{11}",message = "O CPF deve ser informado no formato 99999999999.")
     private String cpf;
     @NotNull

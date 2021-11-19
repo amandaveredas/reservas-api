@@ -5,6 +5,7 @@ import io.github.cwireset.tcc.domain.Endereco;
 import lombok.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
@@ -15,12 +16,12 @@ import java.time.LocalDate;
 @Builder
 public class AtualizarUsuarioRequest {
 
-    @NotNull
+    @NotBlank
     private String nome;
-    @NotNull
+    @NotBlank
     private String email;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @NotNull
+    @NotBlank
     private String senha;
     @NotNull
     private LocalDate dataNascimento;

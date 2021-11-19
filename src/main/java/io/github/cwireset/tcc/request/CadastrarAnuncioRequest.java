@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,7 +35,7 @@ public class CadastrarAnuncioRequest {
     @Enumerated(EnumType.STRING)
     private List<FormaPagamento> formasAceitas;
 
-    @NotNull
+    @NotBlank
     private String descricao;
 
 
