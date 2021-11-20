@@ -27,14 +27,15 @@ public class AnuncioService {
         this.verificaAnuncioPorImovelService = verificaAnuncioPorImovelService;
     }
 
-    public Anuncio cadastrar(CadastrarAnuncioRequest cadastrarAnuncioRequest) throws ImovelIdNaoExisteException, UsuarioIdNaoExisteException, ImovelPossuiAnuncioException, ImovelAmbiguidadeAnunciosException {
+    public Anuncio cadastrar(CadastrarAnuncioRequest cadastrarAnuncioRequest) throws ImovelIdNaoExisteException, UsuarioIdNaoExisteException, ImovelAmbiguidadeAnunciosException {
 
         Long idImovel = cadastrarAnuncioRequest.getIdImovel();
         Imovel imovel = imovelService.buscarPeloId(idImovel);
 
-        verificaAnuncioPorImovelService.verificaSeExisteAnuncioParaImovelELancaExcecao(imovel,idImovel);
-
         Usuario anunciante = usuarioService.buscarPeloId(cadastrarAnuncioRequest.getIdAnunciante());
+
+        if(verificaAnuncioPorImovelService.verificaSeExisteAnuncioParaImovel(imovel))
+            throw new ImovelAmbiguidadeAnunciosException(idImovel);
 
         Anuncio anuncio = Anuncio.builder()
                 .tipoAnuncio(cadastrarAnuncioRequest.getTipoAnuncio())
@@ -59,7 +60,7 @@ public class AnuncioService {
             Usuario anunciante =  usuarioService.buscarPeloId(idAnunciante);
             return repository.findAllByAtivoIsTrueAndAndAnuncianteEquals(anunciante,pageable);
         } catch (UsuarioIdNaoExisteException e) {
-           return null;
+            return repository.findAllByAtivoIsTrueAndAndAnuncianteEquals(null,pageable);
         }
     }
 

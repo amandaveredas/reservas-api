@@ -109,11 +109,13 @@ public class ImovelServiceTest {
     @Test
     public void deveRetornarErroAoNaoEncontrarUsuarioProprietario() throws UsuarioIdNaoExisteException {
         CadastrarImovelRequest cadastrarImovelRequest = buildCadastrarImovelRequest();
+        UsuarioIdNaoExisteException e = new UsuarioIdNaoExisteException(cadastrarImovelRequest.getIdProprietario());
+        String mensagemEsperada = String.format("Nenhum(a) Usuario com Id com o valor '%s' foi encontrado.",cadastrarImovelRequest.getIdProprietario());
 
         when(usuarioService.buscarPeloId(cadastrarImovelRequest.getIdProprietario())).thenThrow(UsuarioIdNaoExisteException.class);
 
         assertThrows(UsuarioIdNaoExisteException.class, ()-> service.salvar(cadastrarImovelRequest));
-
+        assertEquals(mensagemEsperada,e.getMessage());
     }
 
     @Test
@@ -222,7 +224,7 @@ public class ImovelServiceTest {
     @Test
     public void deveRetornarErroAoNaoEncontrarImovelPeloId(){
         Long id = 2L;
-        String mensagemesperada = String.format("Nenhum(a) Imovel com Id com o valor '%s' foi encontrado.",id);
+        String mensagemesperada = String.format("Nenhum(a) Imovel.java com Id com o valor '%s' foi encontrado.",id);
         when(repository.existsByIdAndAtivoIsTrue(id)).thenReturn(false);
 
         ImovelIdNaoExisteException e = assertThrows(ImovelIdNaoExisteException.class, ()->service.buscarPeloId(id));
@@ -253,7 +255,7 @@ public class ImovelServiceTest {
 
         when(repository.existsByIdAndAtivoIsTrue(id)).thenReturn(true);
         when(repository.findById(id)).thenReturn(java.util.Optional.ofNullable(imovel));
-        when(verificaAnuncioPorImovelService.verificaSeImovelPossuiAnuncioAtivo(imovel)).thenReturn(true);
+        when(verificaAnuncioPorImovelService.verificaSeExisteAnuncioParaImovel(imovel)).thenReturn(true);
 
         ImovelPossuiAnuncioException e = assertThrows(ImovelPossuiAnuncioException.class, () -> service.excluir(id));
 
@@ -268,7 +270,7 @@ public class ImovelServiceTest {
 
         when(repository.existsByIdAndAtivoIsTrue(id)).thenReturn(true);
         when(repository.findById(id)).thenReturn(java.util.Optional.ofNullable(imovel));
-        when(verificaAnuncioPorImovelService.verificaSeImovelPossuiAnuncioAtivo(imovel)).thenReturn(false);
+        when(verificaAnuncioPorImovelService.verificaSeExisteAnuncioParaImovel(imovel)).thenReturn(false);
 
         service.excluir(imovel.getId());
 
