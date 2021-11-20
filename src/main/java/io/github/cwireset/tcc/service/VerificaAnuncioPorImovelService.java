@@ -17,9 +17,10 @@ public class VerificaAnuncioPorImovelService {
         this.repository = repository;
     }
 
-    public void verificaSeImovelPodeSerExcluidoELancaExcecao(Imovel imovel) throws ImovelPossuiAnuncioException {
-        if (repository.existsByImovelAndAtivoIsTrue(imovel))
-            throw new ImovelPossuiAnuncioException();
+    public boolean verificaSeImovelPossuiAnuncioAtivo(Imovel imovel) {
+        if (repository.existsByImovelAndAtivoIsTrue(imovel)) return true;
+        else return false;
+
     }
 
 

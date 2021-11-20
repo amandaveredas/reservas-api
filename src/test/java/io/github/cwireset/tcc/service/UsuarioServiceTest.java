@@ -8,6 +8,7 @@ import io.github.cwireset.tcc.exception.UsuarioCpfNaoExisteException;
 import io.github.cwireset.tcc.exception.UsuarioIdNaoExisteException;
 import io.github.cwireset.tcc.repository.UsuarioRepository;
 import io.github.cwireset.tcc.request.AtualizarUsuarioRequest;
+import io.github.cwireset.tcc.request.CadastrarImovelRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -143,6 +144,23 @@ public class UsuarioServiceTest {
         assertEquals(mensagemEsperada,e.getMessage());
 
     }
+
+    @Test
+    public void deveRetornarErroCamposObrigatoriosNaoPreenchidos() {
+        Usuario usuario = buildUsuario();
+        usuario.setNome(null);
+        usuario.setEmail(null);
+        usuario.setSenha(null);
+        usuario.setDataNascimento(null);
+        usuario.setCpf(null);
+
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<Usuario>> violations = validator.validate(usuario);
+
+        assertEquals(5, violations.size());
+
+    }
+
     @Test
     public void deveRetornarErroQuandoCEPEstiverForadoFormato() throws EmailJaExisteException, CpfJaExisteException {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();

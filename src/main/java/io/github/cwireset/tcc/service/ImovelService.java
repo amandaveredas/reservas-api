@@ -63,7 +63,8 @@ public class ImovelService {
 
     public void excluir(Long idImovel) throws ImovelIdNaoExisteException, ImovelPossuiAnuncioException {
         Imovel imovel = buscarPeloId(idImovel);
-        verificaAnuncioPorImovelService.verificaSeImovelPodeSerExcluidoELancaExcecao(imovel);
+        if(verificaAnuncioPorImovelService.verificaSeImovelPossuiAnuncioAtivo(imovel))
+            throw new ImovelPossuiAnuncioException();
         imovel.setAtivo(false);
         repository.save(imovel);
     }
