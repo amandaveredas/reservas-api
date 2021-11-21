@@ -24,6 +24,7 @@ public class PagamentoReservaService {
     }
 
     public void pagar(Long idReserva, Enum<FormaPagamento> formaPagamento) throws ReservaNaoExisteException, FormaPagaMentoInvalidaException, ReservaNaoPendenteException {
+
         Reserva reserva = verificaSeExisteERetornaAReserva(idReserva);
         List<FormaPagamento> formasAceitas = reserva.getAnuncio().getFormasAceitas();
 
@@ -62,15 +63,14 @@ public class PagamentoReservaService {
         Reserva reserva = verificaSeExisteERetornaAReserva(idReserva);
         if(!verificaSeReservaPaga(reserva)){
             throw new ReservaNaoPagaException();
-        };
+        }
         reserva.getPagamento().setStatus(StatusPagamento.ESTORNADO);
-        reserva.getPagamento().setFormaEscolhida(null);
         repository.save(reserva);
     }
 
 
 
-    private boolean verificaSeReservaPendente(Reserva reserva) throws ReservaNaoPendenteException {
+    private boolean verificaSeReservaPendente(Reserva reserva) {
         StatusPagamento status = reserva.getPagamento().getStatus();
         if(!status.equals(StatusPagamento.PENDENTE)){
             return false;
