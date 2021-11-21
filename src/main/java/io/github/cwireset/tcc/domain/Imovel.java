@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -40,4 +41,16 @@ public class Imovel {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean ativo;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Imovel imovel = (Imovel) o;
+        return ativo == imovel.ativo && Objects.equals(id, imovel.id) && Objects.equals(identificacao, imovel.identificacao) && tipoImovel == imovel.tipoImovel && Objects.equals(endereco, imovel.endereco) && Objects.equals(proprietario, imovel.proprietario) && Objects.equals(caracteristicas, imovel.caracteristicas);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, identificacao, tipoImovel, endereco, proprietario, caracteristicas, ativo);
+    }
 }

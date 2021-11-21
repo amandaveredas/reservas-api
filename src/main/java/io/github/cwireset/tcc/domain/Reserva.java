@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -37,4 +38,16 @@ public class Reserva {
     @Embedded
     private Pagamento pagamento;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reserva reserva = (Reserva) o;
+        return Objects.equals(id, reserva.id) && Objects.equals(solicitante, reserva.solicitante) && Objects.equals(anuncio, reserva.anuncio) && Objects.equals(periodo, reserva.periodo) && Objects.equals(quantidadePessoas, reserva.quantidadePessoas) && Objects.equals(pagamento, reserva.pagamento);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, solicitante, anuncio, periodo, quantidadePessoas, pagamento);
+    }
 }

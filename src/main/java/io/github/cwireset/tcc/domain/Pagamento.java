@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -21,4 +22,16 @@ public class Pagamento {
     @Enumerated(EnumType.STRING)
     private StatusPagamento status;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pagamento pagamento = (Pagamento) o;
+        return Objects.equals(valorTotal, pagamento.valorTotal) && formaEscolhida == pagamento.formaEscolhida && status == pagamento.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(valorTotal, formaEscolhida, status);
+    }
 }

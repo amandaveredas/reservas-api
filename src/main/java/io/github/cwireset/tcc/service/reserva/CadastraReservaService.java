@@ -38,18 +38,20 @@ public class CadastraReservaService {
 
     public InformacaoReservaResponse cadastrarReserva(CadastrarReservaRequest cadastrarReservaRequest) throws UsuarioIdNaoExisteException, AnuncioNaoExisteException, PeriodoInvalidoException, SolicitanteIgualAnuncianteException, NumeroMinimoPessoasException, NumeroMinimoDiariasException {
 
+        Usuario solicitante = usuarioService.buscarPeloId(cadastrarReservaRequest.getIdSolicitante());
+        Anuncio anuncio = anuncioService.buscarPeloId(cadastrarReservaRequest.getIdAnuncio());
         LocalDateTime dataHoraInicialRequest = cadastrarReservaRequest.getPeriodo().getDataHoraInicial();
         LocalDateTime dataHoraFinalRequest = cadastrarReservaRequest.getPeriodo().getDataHoraFinal();
-        Anuncio anuncio = anuncioService.buscarPeloId(cadastrarReservaRequest.getIdAnuncio());
         TipoImovel tipoImovel = anuncio.getImovel().getTipoImovel();
         Integer quantidadePessoas = cadastrarReservaRequest.getQuantidadePessoas();
-        Usuario solicitante = usuarioService.buscarPeloId(cadastrarReservaRequest.getIdSolicitante());
+
 
         if (dataHoraInicialRequest.isAfter(dataHoraFinalRequest))
             throw new PeriodoInvalidoException("Período inválido! A data final da reserva precisa ser maior do que a data inicial.");
 
         LocalDate dataInicialRequest = LocalDate.of(dataHoraInicialRequest.getYear(),dataHoraInicialRequest.getMonthValue(),dataHoraInicialRequest.getDayOfMonth());
         LocalDate dataIFinalRequest = LocalDate.of(dataHoraFinalRequest.getYear(),dataHoraFinalRequest.getMonthValue(),dataHoraFinalRequest.getDayOfMonth());
+
         if(dataInicialRequest.isEqual(dataIFinalRequest))
             throw new PeriodoInvalidoException("Período inválido! O número mínimo de diárias precisa ser maior ou igual à 1.");
 

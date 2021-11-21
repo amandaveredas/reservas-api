@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -41,4 +42,16 @@ public class Anuncio {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean ativo;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Anuncio anuncio = (Anuncio) o;
+        return ativo == anuncio.ativo && Objects.equals(id, anuncio.id) && tipoAnuncio == anuncio.tipoAnuncio && Objects.equals(imovel, anuncio.imovel) && Objects.equals(anunciante, anuncio.anunciante) && Objects.equals(valorDiaria, anuncio.valorDiaria) && Objects.equals(formasAceitas, anuncio.formasAceitas) && Objects.equals(descricao, anuncio.descricao);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, tipoAnuncio, imovel, anunciante, valorDiaria, formasAceitas, descricao, ativo);
+    }
 }
