@@ -37,9 +37,9 @@ public class BuscaReservaService {
             if(inicioPeriodo == null && fimPeriodo == null){
                 return repository.findAllBySolicitante(solicitante, pageable);
             }else if (inicioPeriodo == null){
-                return Page.empty(pageable);
+                return repository.findAllBySolicitante(solicitante, pageable);
             }else if (fimPeriodo == null){
-                return Page.empty(pageable);
+                return repository.findAllBySolicitante(solicitante, pageable);
             }else{
                 return repository.findReservasBySolicitanteAndPeriodo_DataHoraInicialIsAfterAndPeriodo_DataHoraFinalIsBefore(solicitante,inicioPeriodo,fimPeriodo,pageable);
             }
