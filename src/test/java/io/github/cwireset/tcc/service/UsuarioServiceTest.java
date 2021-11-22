@@ -12,6 +12,7 @@ import io.github.cwireset.tcc.request.CadastrarImovelRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -376,18 +377,21 @@ public class UsuarioServiceTest {
     public void deveRetornarPaginaVazia() {
        Pageable pageable;
        pageable = PageRequest.of(0,10,Sort.by(Sort.Direction.ASC,"name"));
+       ArgumentCaptor<Pageable> argumentCaptor = ArgumentCaptor.forClass(Pageable.class);
        List<Usuario> usuarios = new ArrayList<>();
        Page<Usuario> expected = new PageImpl<>(usuarios);
 
-       when(repository.findAll(pageable)).thenReturn(expected);
+       when(repository.findAll(argumentCaptor.capture())).thenReturn(expected);
 
        assertEquals(0,service.buscarTodos(pageable).getTotalElements());
+       assertEquals(pageable, argumentCaptor.getValue());
     }
 
     @Test
-    public void deveRetornarPaginaOrdenadaPrimeiros10Usuarios() {
+    public void deveRetornarPaginaOrdenada() {
         Pageable pageable = PageRequest.of(0,10,Sort.by(Sort.Direction.ASC,"nome"));
         List<Usuario> usuarios = new ArrayList<>();
+        ArgumentCaptor<Pageable> argumentCaptor = ArgumentCaptor.forClass(Pageable.class);
 
         Usuario usuario1 = buildUsuario();
         usuario1.setNome("Valquiria");
@@ -425,14 +429,14 @@ public class UsuarioServiceTest {
 
         Page<Usuario> expected = new PageImpl<Usuario>(usuarios,pageable,usuarios.size());
 
-        when(repository.findAll(pageable)).thenReturn(expected);
-        Page<Usuario> recebidos = service.buscarTodos(pageable);
+        when(repository.findAll(argumentCaptor.capture())).thenReturn(expected);
+        service.buscarTodos(pageable);
 
-        assertEquals(11,recebidos.getTotalElements());
-        assertEquals(2,recebidos.getTotalPages());
-        assertEquals(10,recebidos.getSize());
-        assertEquals(Sort.by(Sort.Direction.ASC,"nome"),recebidos.getSort());
-        assertEquals(service.buscarTodos(pageable), expected);
+        assertEquals(11,expected.getTotalElements());
+        assertEquals(2,expected.getTotalPages());
+        assertEquals(10,expected.getSize());
+        assertEquals(Sort.by(Sort.Direction.ASC,"nome"),expected.getSort());
+        assertEquals(pageable, argumentCaptor.getValue());
 
     }
 

@@ -9,6 +9,7 @@ import io.github.cwireset.tcc.request.CadastrarImovelRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -155,21 +156,24 @@ public class ImovelServiceTest {
 
     @Test
     public void deveRetornarPaginaVazia() {
-        Pageable pageable;
-        pageable = PageRequest.of(0,10, Sort.by(Sort.Direction.ASC,"identificacao"));
+        Pageable pageable = PageRequest.of(0,10, Sort.by(Sort.Direction.ASC,"identificacao"));
+
         List<Imovel> imoveis = new ArrayList<>();
         Page<Imovel> expected = new PageImpl<>(imoveis);
+        ArgumentCaptor<Pageable> argumentCaptor = ArgumentCaptor.forClass(Pageable.class);
 
-        when(repository.findAllByAtivoIsTrue(pageable)).thenReturn(expected);
+        when(repository.findAllByAtivoIsTrue(argumentCaptor.capture())).thenReturn(expected);
+        service.buscarTodos(pageable);
 
-        assertEquals(0,service.buscarTodos(pageable).getTotalElements());
+        assertEquals(0,expected.getTotalElements());
+        assertEquals(pageable, argumentCaptor.getValue());
     }
 
     @Test
     public void deveRetornarPaginaOrdenada() {
         Pageable pageable = PageRequest.of(0,5,Sort.by(Sort.Direction.ASC,"identificacao"));
         List<Imovel> imoveis = new ArrayList<>();
-
+        ArgumentCaptor<Pageable> argumentCaptor = ArgumentCaptor.forClass(Pageable.class);
         imoveis.add(buildImovel());
         Imovel imovel2 = buildImovel();
         imovel2.setIdentificacao("casa na praia");
@@ -177,14 +181,14 @@ public class ImovelServiceTest {
 
         Page<Imovel> expected = new PageImpl<Imovel>(imoveis,pageable,imoveis.size());
 
-        when(repository.findAllByAtivoIsTrue(pageable)).thenReturn(expected);
-        Page<Imovel> recebidos = service.buscarTodos(pageable);
+        when(repository.findAllByAtivoIsTrue(argumentCaptor.capture())).thenReturn(expected);
+       service.buscarTodos(pageable);
 
-        assertEquals(2,recebidos.getTotalElements());
-        assertEquals(1,recebidos.getTotalPages());
-        assertEquals(5,recebidos.getSize());
-        assertEquals(Sort.by(Sort.Direction.ASC,"identificacao"),recebidos.getSort());
-        assertEquals(service.buscarTodos(pageable), expected);
+        assertEquals(2,expected.getTotalElements());
+        assertEquals(1,expected.getTotalPages());
+        assertEquals(5,expected.getSize());
+        assertEquals(Sort.by(Sort.Direction.ASC,"identificacao"),expected.getSort());
+        assertEquals(pageable, argumentCaptor.getValue());
 
     }
 
@@ -195,30 +199,40 @@ public class ImovelServiceTest {
         Pageable pageable = PageRequest.of(0,5,Sort.by(Sort.Direction.ASC,"identificacao"));
         List<Imovel> imoveis = new ArrayList<>();
         Page<Imovel> expected = new PageImpl<Imovel>(imoveis,pageable,imoveis.size());
+        ArgumentCaptor<Pageable> pageArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        ArgumentCaptor<Usuario> usuarioArgumentCaptor = ArgumentCaptor.forClass(Usuario.class);
 
         when(usuarioService.buscarPeloId(id)).thenThrow(UsuarioIdNaoExisteException.class);
-        when(repository.findAllByProprietario(proprietario,pageable)).thenReturn(expected);
+        when(repository.findAllByProprietario(usuarioArgumentCaptor.capture(),pageArgumentCaptor.capture())).thenReturn(expected);
+        service.buscarImoveisPorProprietario(pageable,id);
 
-        assertTrue(service.buscarImoveisPorProprietario(pageable,id).isEmpty());
+        assertEquals(pageable, pageArgumentCaptor.getValue());
+        assertEquals(proprietario, usuarioArgumentCaptor.getValue());
     }
 
     @Test
     public void deveRetornarPageComImoveisDoProprietario() throws UsuarioIdNaoExisteException {
         Long id = 1L;
-        Usuario proprietario = new Usuario();
+        Usuario proprietario = Usuario.builder()
+                .id(1L).build();
         Pageable pageable = PageRequest.of(0,5,Sort.by(Sort.Direction.ASC,"identificacao"));
         List<Imovel> imoveis = new ArrayList<>();
         imoveis.add(buildImovel());
         Imovel imovel2 = buildImovel();
         imovel2.setIdentificacao("casa na praia");
         imoveis.add(imovel2);
+        ArgumentCaptor<Pageable> pageArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        ArgumentCaptor<Usuario> usuarioArgumentCaptor = ArgumentCaptor.forClass(Usuario.class);
 
         Page<Imovel> expected = new PageImpl<Imovel>(imoveis,pageable,imoveis.size());
 
         when(usuarioService.buscarPeloId(id)).thenReturn(proprietario);
-        when(repository.findAllByAtivoIsTrueAndProprietarioEquals(proprietario,pageable)).thenReturn(expected);
+        when(repository.findAllByAtivoIsTrueAndProprietarioEquals(usuarioArgumentCaptor.capture(),pageArgumentCaptor.capture())).thenReturn(expected);
+        service.buscarImoveisPorProprietario(pageable,id);
 
         assertEquals(2, service.buscarImoveisPorProprietario(pageable, id).getTotalElements());
+        assertEquals(pageable, pageArgumentCaptor.getValue());
+        assertEquals(proprietario, usuarioArgumentCaptor.getValue());
     }
 
     @Test
