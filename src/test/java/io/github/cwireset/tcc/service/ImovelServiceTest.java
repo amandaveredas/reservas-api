@@ -238,7 +238,7 @@ public class ImovelServiceTest {
     @Test
     public void deveRetornarErroAoNaoEncontrarImovelPeloId(){
         Long id = 2L;
-        String mensagemesperada = String.format("Nenhum(a) Imovel.java com Id com o valor '%s' foi encontrado.",id);
+        String mensagemesperada = String.format("Nenhum(a) Imovel com Id com o valor '%s' foi encontrado.",id);
         when(repository.existsByIdAndAtivoIsTrue(id)).thenReturn(false);
 
         ImovelIdNaoExisteException e = assertThrows(ImovelIdNaoExisteException.class, ()->service.buscarPeloId(id));
