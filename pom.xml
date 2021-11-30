@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	
-	<groupId>io.github.cwi-reset</groupId>
-	<artifactId>tcc-amandaveredas</artifactId>
+	<groupId>io.github.amandaverdas</groupId>
+	<artifactId>api-reservas</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>tcc-amandaveredas</name>
+	<name>api-reservas</name>
 
 	<properties>
 		<java.version>1.8</java.version>
